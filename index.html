@@ -1,0 +1,63 @@
+<head>
+    <title>Luminespire</title>
+    <script src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+</head>
+<h1>Luminespire</h1>
+
+<strong>Program</strong>
+<br>
+<textarea id="program" oninput="refreshTable()"></textarea>
+
+<table id="cells">
+</table>
+
+<strong>Lines</strong>
+
+
+<table id="lines">
+</table>
+
+<ul id="sections">
+</ul>
+
+<script>
+    new Sortable(document.getElementById('sections'), {
+        animation: 150,
+        onEnd: function (/**Event*/evt) {
+
+            let sections = document.getElementById('sections');
+
+            let tempLines = new Map();
+
+            for (let i = 0; i < sections.children.length; i++) {
+                let table = sections.children[i].children[0];
+                let oldIndex = parseInt(table.rows[0].cells[0].innerHTML.substring(4));
+
+                if (selectedLine === oldIndex) {
+                    selectedLine = i;
+                }
+
+                table.rows[0].cells[1].innerHTML = `Line ${i + 1}`;
+                tempLines.set(`line${i}`, lines.get(sections.children[i].id));
+                sections.children[i].id = `line${i}`;
+            }
+
+
+            refreshTable();
+        }
+    })
+</script>
+
+<button onclick="addLine()">Add Line</button>
+<button onclick="removeLine()">Remove Line</button>
+
+<button onclick="generateExplanation()">Generate Explanation</button>
+
+<br>
+
+<strong>Output</strong>
+<br>
+
+<textarea id="output" readonly></textarea>
