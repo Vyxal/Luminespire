@@ -26,19 +26,19 @@ function refreshTable() {
 
       if (line.includes(index)) {
         line.splice(line.indexOf(index), 1);
-    
+
         // Also highlight the character in the program
-    
+
         row.cells[index].style.backgroundColor = "white";
       } else {
         line.push(index);
         line.sort((a, b) => a - b);
-    
+
         // Also dehighlight the character in the program
         row.cells[index].style.backgroundColor = "yellow";
       }
       lines.set(`line${selectedLine}`, line);
-    
+
       const element = $(`#line${selectedLine}`);
       const code = line
         .map((index) => $("#program").value[index])
@@ -76,9 +76,8 @@ function addLine() {
   cellName.innerHTML = `Line ${id}`;
   cellCode.innerHTML = "{}";
   cellInput.innerHTML = `<textarea id="line${id}"></textarea>`;
-  cellRemove.innerHTML = `<button onclick="removeLineX(${
-    id - 1
-  })">Remove</button>`;
+  cellRemove.innerHTML = `<button onclick="removeLineX(${id - 1
+    })">Remove</button>`;
   cellEmpty.innerHTML = `<button onclick="clearLine(${id})">Clear</button>`;
 
   // Add the line to the hashmap
@@ -130,7 +129,21 @@ function clearLine(x) {
 
 function generateExplanation() {
   const output = $("#output");
-  output.value = "Todo: Implement";
+  // repeat the string "" for each line. Place in array
+  let explanationLines = Array.from({ length: lineCount }, () => "");
+  let program = $("#program").value.split("");
+  for (let i = 1; i < lineCount; i++) {
+    let line = lines.get(`line${i}`);
+    console.log(line);
+    explanationLines[i] = program.map((char, index) => {
+      if (line.includes(index)) {
+        return char;
+      } else {
+        return " ";
+      }
+    }).join("") + "  # " + $("#line" + i).children[0].rows[0].cells[3].children[0].value;
+    output.value = program.join("") + "\n" + explanationLines.join("\n");
+  }
 }
 
 $('.generate-explanation').addEventListener('click', generateExplanation);
