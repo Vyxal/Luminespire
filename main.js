@@ -3,7 +3,7 @@ const $$ = x => document.querySelectorAll(x);
 
 // hashmap of all lines and indexes of characters in the program
 
-const lines = new Map();
+let lines = new Map();
 let selectedLine = -1;
 let lineCount = 1;
 
@@ -75,7 +75,7 @@ function addLine() {
   cellSelect.innerHTML = `<input type="radio" name="line" onclick="updateSelect(${id})" value="line${id}">`;
   cellName.innerHTML = `Line ${id}`;
   cellCode.innerHTML = "{}";
-  cellInput.innerHTML = `<textarea id="line${id}"></textarea>`;
+  cellInput.innerHTML = `<textarea></textarea>`;
   cellRemove.innerHTML = `<button onclick="removeLineX(${id - 1
     })">Remove</button>`;
   cellEmpty.innerHTML = `<button onclick="clearLine(${id})">Clear</button>`;
@@ -164,9 +164,11 @@ new Sortable($("#sections"), {
       }
 
       table.rows[0].cells[1].innerHTML = `Line ${i + 1}`;
-      tempLines.set(`line${i}`, lines.get(sections.children[i].id));
-      sections.children[i].id = `line${i}`;
+      tempLines.set(`line${i + 1}`, lines.get(sections.children[i].id));
+      sections.children[i].id = `line${i + 1}`;
     }
+
+    lines = tempLines;
 
     refreshTable();
   },
