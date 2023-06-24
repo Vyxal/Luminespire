@@ -1,124 +1,160 @@
+const $ = x => document.querySelector(x);
+const $$ = x => document.querySelectorAll(x);
+
 // hashmap of all lines and indexes of characters in the program
 
-let lines = new Map();
+const lines = new Map();
 let selectedLine = -1;
-let lineCount = 1
+let lineCount = 1;
 
 function refreshTable() {
+  const tr = document.createElement('tr');
+  $("#cells").innerHTML = "";
+  $("#cells").appendChild(tr);
 
-    let table = document.getElementById("cells");
+  const program = $("#program").value.split("");
 
-    let tableHtml = "<tr>";
-    let program = document.getElementById("program").value.split("");
+  program.forEach((char, index) => {
+    const td = document.createElement('td');
+    td.addEventListener('click', () => {
+      if (selectedLine === -1) {
+        return;
+      }
+      const line = lines.get(`line${selectedLine}`);
+      const table = $("#cells");
+      const row = table.rows[0];
 
-    program.forEach((char, index) => {
-        const highlightAddition = lines.get(`line${selectedLine}`)?.includes(index) ? "style='background-color: yellow'" : "";
-        tableHtml += `<td onclick="handle(${index})" ${highlightAddition}>${char}</td>`
-    }
-    );
-
-    tableHtml += "</tr>";
-    table.innerHTML = tableHtml;
-}
-
-function handle(index) {
-    if (selectedLine == -1) { return }
-    let line = lines.get(`line${selectedLine}`);
-    if (line.includes(index)) {
+      if (line.includes(index)) {
         line.splice(line.indexOf(index), 1);
-
+    
         // Also highlight the character in the program
-
-        let table = document.getElementById("cells");
-        let row = table.rows[0];
+    
         row.cells[index].style.backgroundColor = "white";
-
-    } else {
+      } else {
         line.push(index);
-        line.sort((a, b) => a - b)
-
+        line.sort((a, b) => a - b);
+    
         // Also dehighlight the character in the program
-        let table = document.getElementById("cells");
-        let row = table.rows[0];
         row.cells[index].style.backgroundColor = "yellow";
+      }
+      lines.set(`line${selectedLine}`, line);
+    
+      const element = $(`#line${selectedLine}`);
+      const code = line
+        .map((index) => $("#program").value[index])
+        .join("");
+      element.children[0].rows[0].cells[2].innerHTML = "{" + code + "}";
+    });
+
+    if (lines.get(`line${selectedLine}`)?.includes(index)) {
+      td.style.backgroundColor = 'yellow';
     }
-    lines.set(`line${selectedLine}`, line);
-
-    let element = document.getElementById(`line${selectedLine}`);
-    let code = line.map((index) => document.getElementById("program").value[index]).join("");
-    element.children[0].rows[0].cells[2].innerHTML = "{" + code + "}";
-
+    td.innerText = char;
+    tr.appendChild(td);
+  });
 }
+
+$('#program').addEventListener('input', refreshTable);
 
 function updateSelect(id) {
-    selectedLine = id;
-    refreshTable();
+  selectedLine = id;
+  refreshTable();
 }
 
 function addLine() {
-    // Dynamically add a row to the "lines" table
-    let table = document.createElement("table");
-    let row = table.insertRow(-1);
-    let cellSelect = row.insertCell(0);
-    let cellName = row.insertCell(1);
-    let cellCode = row.insertCell(2);
-    let cellInput = row.insertCell(3);
-    let cellRemove = row.insertCell(4);
-    let cellEmpty = row.insertCell(5);
-    let id = lineCount
-    cellSelect.innerHTML = `<input type="radio" name="line" onclick="updateSelect(${id})" value="line${id}">`;
-    cellName.innerHTML = `Line ${id}`;
-    cellCode.innerHTML = "{}";
-    cellInput.innerHTML = `<textarea id="line${id}"></textarea>`;
-    cellRemove.innerHTML = `<button onclick="removeLineX(${id - 1})">Remove</button>`;
-    cellEmpty.innerHTML = `<button onclick=clearLine(${id})>Clear</button>`;
+  // Dynamically add a row to the "lines" table
+  const table = document.createElement("table");
+  const row = table.insertRow(-1);
+  const cellSelect = row.insertCell(0);
+  const cellName = row.insertCell(1);
+  const cellCode = row.insertCell(2);
+  const cellInput = row.insertCell(3);
+  const cellRemove = row.insertCell(4);
+  const cellEmpty = row.insertCell(5);
+  const id = lineCount;
+  cellSelect.innerHTML = `<input type="radio" name="line" onclick="updateSelect(${id})" value="line${id}">`;
+  cellName.innerHTML = `Line ${id}`;
+  cellCode.innerHTML = "{}";
+  cellInput.innerHTML = `<textarea id="line${id}"></textarea>`;
+  cellRemove.innerHTML = `<button onclick="removeLineX(${
+    id - 1
+  })">Remove</button>`;
+  cellEmpty.innerHTML = `<button onclick="clearLine(${id})">Clear</button>`;
 
-    // Add the line to the hashmap
-    lines.set(`line${id}`, []);
+  // Add the line to the hashmap
+  lines.set(`line${id}`, []);
 
-    let sections = document.getElementById("sections");
-    let newLine = document.createElement("li");
-    newLine.appendChild(table);
-    newLine.setAttribute("id", `line${id}`);
-    sections.appendChild(newLine);
+  const sections = $("#sections");
+  const newLine = document.createElement("li");
+  newLine.appendChild(table);
+  newLine.setAttribute("id", `line${id}`);
+  sections.appendChild(newLine);
 
-    lineCount++;
-
+  lineCount++;
 }
+
+$('.add-line').addEventListener('click', addLine);
 
 function removeLine() {
-    // Remove the last li from the "sections" ul
-    let element = document.getElementById(`line${lineCount - 1}`);
-    element.parentNode.removeChild(element);
-    lines.delete(`line${lineCount - 1}`);
-    lineCount--;
+  // Remove the last li from the "sections" ul
+  const element = $(`#line${lineCount - 1}`);
+  element.parentNode.removeChild(element);
+  lines.delete(`line${lineCount - 1}`);
+  lineCount--;
 }
 
+$('.remove-line').addEventListener('click', removeLine);
+
 function removeLineX(x) {
-    // Remove the nth li from the "sections" ul
-    let element = document.getElementById(`line${x + 1}`);
-    element.parentNode.removeChild(element);
-    lines.delete(`line${x + 1}`);
+  // Remove the nth li from the "sections" ul
+  const element = $(`#line${x + 1}`);
+  element.parentNode.removeChild(element);
+  lines.delete(`line${x + 1}`);
 
-    lineCount--;
+  lineCount--;
 
-    // update the second cell of the table in each li
-    let sections = document.getElementById("sections");
-    for (let i = 0; i < sections.children.length; i++) {
-        let table = sections.children[i].children[0];
-        table.rows[0].cells[1].innerHTML = `Line ${i + 1}`;
-    }
+  // update the second cell of the table in each li
+  const sections = $("#sections");
+  for (let i = 0; i < sections.children.length; i++) {
+    const table = sections.children[i].children[0];
+    table.rows[0].cells[1].innerHTML = `Line ${i + 1}`;
+  }
 }
 
 function clearLine(x) {
-    // Clear the textarea of the nth li from the "sections" ul
-    let element = document.getElementById(`line${x}`);
-    element.children[0].rows[0].cells[2].innerHTML = "{}";
-    lines.set(`line${x}`, []);
+  // Clear the textarea of the nth li from the "sections" ul
+  const element = $(`#line${x}`);
+  element.children[0].rows[0].cells[2].innerHTML = "{}";
+  lines.set(`line${x}`, []);
 }
-
 
 function generateExplanation() {
-    let output = document.getElementById("output");
-    output.value = "Todo: Implement"
+  const output = $("#output");
+  output.value = "Todo: Implement";
 }
+
+$('.generate-explanation').addEventListener('click', generateExplanation);
+
+new Sortable($("#sections"), {
+  animation: 150,
+  onEnd: () => {
+    const sections = $("#sections");
+
+    const tempLines = new Map();
+
+    for (let i = 0; i < sections.children.length; i++) {
+      const table = sections.children[i].children[0];
+      const oldIndex = +table.rows[0].cells[0].innerHTML.substring(4);
+
+      if (selectedLine === oldIndex) {
+        selectedLine = i;
+      }
+
+      table.rows[0].cells[1].innerHTML = `Line ${i + 1}`;
+      tempLines.set(`line${i}`, lines.get(sections.children[i].id));
+      sections.children[i].id = `line${i}`;
+    }
+
+    refreshTable();
+  },
+});
