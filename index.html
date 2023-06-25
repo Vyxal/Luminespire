@@ -1,36 +1,12 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Luminespire</title>
   </head>
   <body>
-    <h1>Luminespire</h1>
-
-    <strong>Program</strong>
-    <br />
-    <textarea id="program"></textarea>
-
-    <table id="cells"></table>
-
-    <strong>Lines</strong>
-
-    <table id="lines"></table>
-
-    <ul id="sections"></ul>
-
-    <button class="add-line">Add Line</button>
-    <button class="remove-line">Remove Line</button>
-
-    <button class="generate-explanation">Generate Explanation</button>
-
-    <br />
-
-    <strong>Output</strong>
-    <br />
-
-    <textarea id="output" readonly></textarea>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script src="main.js"></script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
