@@ -54,24 +54,26 @@
 		}
 		const index = lines[selectedLine].code[row].indexOf(col);
 		if (index >= 0) {
-			lines[selectedLine].code.splice(index, 1);
+			lines[selectedLine].code[row].splice(index, 1);
 		} else {
 			lines[selectedLine].code[row].push(col);
 			lines[selectedLine].code[row].sort((a, b) => a - b);
 		}
-		lines[selectedLine].code = lines[selectedLine].code;
+		lines = lines;
 	}
 
-  $: explanation = [
+	$: maxLen = Math.max(...textLines.map(r => r.length));
+	$: console.log(maxLen);
+	$: explanation = [
 			text,
 			...lines.flatMap(line => {
-			  let rows = textLines
+			  const rows = textLines
 					.filter((_, r) => line.code[r] !== undefined)
 					.map((row, r) => [...row].map((x, i) => line.code[r]?.includes(i) ? x : ' ').join(''));
 				if (rows.length == 0) {
 					return [];
 				} else {
-					return [rows[0] + "  # " + line.input, ...rows.slice(1)]
+					return [rows[0].padEnd(maxLen, " ") + "  # " + line.input, ...rows.slice(1)]
 				}
 			})
 		].join("\n");
