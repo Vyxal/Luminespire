@@ -3,12 +3,13 @@
 	import Sortable from 'sortablejs';
 
 	interface Line {
-		code: number[];
+		code: number[][];
 		input: string;
 		id: number;
 	}
 
 	let text = '';
+	$: textLines = text.split("\n");
 
 	let lines: Line[] = [];
 
@@ -46,19 +47,34 @@
 		});
 	});
 
-	function select(idx: number) {
+	function select(row: number, col: number) {
 		if (selectedLine === null) return;
-		const index = lines[selectedLine].code.indexOf(idx);
+		if (!lines[selectedLine].code[row]) {
+			lines[selectedLine].code[row] = [];
+		}
+		const index = lines[selectedLine].code[row].indexOf(col);
 		if (index >= 0) {
 			lines[selectedLine].code.splice(index, 1);
 		} else {
-			lines[selectedLine].code.push(idx);
-			lines[selectedLine].code.sort((a, b) => a - b);
+			lines[selectedLine].code[row].push(col);
+			lines[selectedLine].code[row].sort((a, b) => a - b);
 		}
 		lines[selectedLine].code = lines[selectedLine].code;
 	}
 
-  $: explanation = [text, ...lines.map(line => [...text].map((x, i) => line.code.includes(i) ? x : ' ').join('') + "  # " + line.input)].join("\n");
+  $: explanation = [
+			text,
+			...lines.flatMap(line => {
+			  let rows = textLines
+					.filter((_, r) => line.code[r] !== undefined)
+					.map((row, r) => [...row].map((x, i) => line.code[r]?.includes(i) ? x : ' ').join(''));
+				if (rows.length == 0) {
+					return [];
+				} else {
+					return [rows[0] + "  # " + line.input, ...rows.slice(1)]
+				}
+			})
+		].join("\n");
 
 	function programOnInput(e) {
 		e.target.style.height = 0;
@@ -70,16 +86,20 @@
 	<h1 class="text-4xl font-bold text-center">Luminespire - The Explanation Assistant</h1>
 	<div class="font-bold">Program</div>
 	<textarea on:input={programOnInput} id="program" class="resize-none min-h-[50px] border border-gray-400 h-24 font-mono w-full max-w-md mt-4" bind:value={text} />
-	<div class="flex flex-wrap gap-3 my-4">
-		{#each text as char, idx}
-			<div
-				class="text-lg cursor-pointer py-1 px-3"
-				class:bg-gray-200={selectedLine === null || !lines[selectedLine].code.includes(idx)}
-				class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code.includes(idx)}
-				on:click={() => select(idx)}
-        role="checkbox"
-			>
-				{char}
+	<div class="flex-col gap-3">
+		{#each textLines as row, r}
+		  <div class="flex flex-wrap gap-3 my-4">
+				{#each row as char, c}
+					<div
+						class="text-lg cursor-pointer py-1 px-3"
+						class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.includes(c)}
+						class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.includes(c)}
+						on:click={() => select(r, c)}
+						role="checkbox"
+					>
+						{char}
+					</div>
+				{/each}
 			</div>
 		{/each}
 	</div>
@@ -97,7 +117,7 @@
 					role="radio"
 				/>
 				<div>Line {idx + 1}</div>
-				<div>{'{' + line.code.map((x) => text[x]).join('') + '}'}</div>
+				<div>{'{' + line.code.flatMap((row, r) => row?.map(c => textLines[r][c]) ?? []).join('') + '}'}</div>
 				<textarea bind:value={line.input} class="border border-gray-400" />
 				<button on:click={() => (lines.splice(idx, 1), (lines = lines))} class="btn">Remove</button>
 				<button on:click={() => (line.code = [])} class="btn">Clear</button>
