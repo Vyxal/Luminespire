@@ -24,7 +24,6 @@
 	}
 
 	let linesEl;
-	let programEl;
 
 	onMount(() => {
 		Sortable.create(linesEl, {
@@ -44,11 +43,6 @@
 				lines = lines;
 			}
 		});
-		programEl.oninput = () => {
-	// Resize the textarea to fit the content
-	programEl.style.height = 0;
-	programEl.style.height = programEl.scrollHeight + 'px';
-  }
 	});
 
 	function select(idx: number) {
@@ -64,22 +58,18 @@
 
   $: explanation = [text, ...lines.map(line => [...text].map((x, i) => line.code.includes(i) ? x : ' ').join('') + "  # " + line.input)].join("\n");
 
-	$: console.log(lines);
-
-
-
-
+	function programOnInput(e) {
+		e.target.style.height = 0;
+		e.target.style.height = e.target.scrollHeight + 10 + 'px';
+	}
 </script>
 
 <div class="p-5">
-	<h1>Luminespire - The Explanation Assistant</h1>
-	<div class="space-y-4">
-			<strong>Program</strong>
-			<br/>
-			<textarea bind:this={programEl} id="program" class="resize-none hover:resize border border-gray-400 h-24 font-mono w-full h-fit" bind:value={text} />
-	</div>
+	<h1 class="text-4xl font-bold text-center">Luminespire - The Explanation Assistant</h1>
+	<div class="font-bold">Program</div>
+	<textarea on:input={programOnInput} id="program" class="resize-none min-h-[50px] border border-gray-400 h-24 font-mono w-full max-w-md mt-4" bind:value={text} />
 	<div class="flex flex-wrap gap-3 my-4">
-		{#each text as char, idx }
+		{#each text as char, idx}
 			<div
 				class="text-lg cursor-pointer py-1 px-3"
 				class:bg-gray-200={selectedLine === null || !lines[selectedLine].code.includes(idx)}
