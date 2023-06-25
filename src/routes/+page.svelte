@@ -28,12 +28,14 @@
 		}
 		lines[selectedLine].code = lines[selectedLine].code;
 	}
+
+  $: explanation = [text, ...lines.map(line => [...text].map((x, i) => line.code.includes(i) ? x : ' ').join('') + "  # " + line.input)].join("\n");
 </script>
 
 <div class="p-5">
 	<strong>Program</strong>
 	<br />
-	<textarea id="program" class="border border-gray-400 h-24" bind:value={text} />
+	<textarea id="program" class="border border-gray-400 h-24 font-mono" bind:value={text} />
 
 	<div class="flex flex-wrap gap-3 my-4">
 		{#each text as char, idx}
@@ -74,13 +76,11 @@
 
 	<button class="btn" on:click={addLine}>Add Line</button>
 
-	<button class="btn">Generate Explanation</button>
-
 	<br />
 	<br />
 
-	<strong>Output</strong>
+	<strong>Explanation</strong>
 	<br />
 
-	<textarea readonly class="border border-gray-400" />
+	<textarea readonly value={explanation} class="border border-gray-400 font-mono" cols="50" rows="10" />
 </div>
