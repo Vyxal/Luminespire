@@ -54,7 +54,7 @@
     }
     const index = lines[selectedLine].code[row].indexOf(col);
     if (index >= 0) {
-      lines[selectedLine].code.splice(index, 1);
+      lines[selectedLine].code[row].splice(index, 1);
     } else {
       lines[selectedLine].code[row].push(col);
       lines[selectedLine].code[row].sort((a, b) => a - b);
