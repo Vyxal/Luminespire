@@ -53,6 +53,7 @@
 			lines[selectedLine].code.splice(index, 1);
 		} else {
 			lines[selectedLine].code.push(idx);
+			lines[selectedLine].code.sort((a, b) => a - b);
 		}
 		lines[selectedLine].code = lines[selectedLine].code;
 	}
