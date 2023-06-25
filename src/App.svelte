@@ -136,7 +136,7 @@
   <br />
   <br />
 
-  <strong>Comment character:</strong>
+  <div class="font-bold text-xl">Comment character</div>
   <input bind:value={commentChar} class="border" />
 
   <br />
