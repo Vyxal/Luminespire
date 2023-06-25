@@ -32,6 +32,7 @@
 				put: true,
 			},
 			animation: 200,
+			chosenClass: "cursor-grabbing",
 			onEnd: ev => {
 				if (lines.length <= 1) return;
 				[lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
@@ -86,7 +87,7 @@
 
 	<ul bind:this={linesEl}>
 		{#each lines as line, idx (line.id)}
-			<li class="flex items-center gap-3">
+			<li class="flex items-center gap-3 cursor-grab">
 				<div
 					class="w-5 h-5 cursor-pointer"
 					class:bg-gray-300={idx !== selectedLine}
