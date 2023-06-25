@@ -11,9 +11,9 @@
   let text = '';
   $: textLines = text.split("\n");
 
-	let commentChar = "#";
+  let commentChar = "#";
 
-	let lines: Line[] = [];
+  let lines: Line[] = [];
 
   let selectedLine: null | number = null;
 
@@ -49,36 +49,36 @@
     });
   });
 
-	function select(row: number, col: number) {
-		if (selectedLine === null) return;
-		if (!lines[selectedLine].code[row]) {
-			lines[selectedLine].code[row] = [];
-		}
-		const index = lines[selectedLine].code[row].indexOf(col);
-		if (index >= 0) {
-			lines[selectedLine].code[row].splice(index, 1);
-		} else {
-			lines[selectedLine].code[row].push(col);
-			lines[selectedLine].code[row].sort((a, b) => a - b);
-		}
-		lines = lines;
-	}
+  function select(row: number, col: number) {
+    if (selectedLine === null) return;
+    if (!lines[selectedLine].code[row]) {
+      lines[selectedLine].code[row] = [];
+    }
+    const index = lines[selectedLine].code[row].indexOf(col);
+    if (index >= 0) {
+      lines[selectedLine].code[row].splice(index, 1);
+    } else {
+      lines[selectedLine].code[row].push(col);
+      lines[selectedLine].code[row].sort((a, b) => a - b);
+    }
+    lines = lines;
+  }
 
-	$: maxLen = Math.max(...textLines.map(r => r.length));
-	$: console.log(maxLen);
-	$: explanation = [
-			text,
-			...lines.flatMap(line => {
-			  const rows = textLines
-					.filter((_, r) => line.code[r] !== undefined)
-					.map((row, r) => [...row].map((x, i) => line.code[r]?.includes(i) ? x : ' ').join(''));
-				if (rows.length == 0) {
-					return [];
-				} else {
-					return [rows[0].padEnd(maxLen, " ") + `  ${commentChar} ` + line.input, ...rows.slice(1)]
-				}
-			})
-		].join("\n");
+  $: maxLen = Math.max(...textLines.map(r => r.length));
+  $: console.log(maxLen);
+  $: explanation = [
+      text,
+      ...lines.flatMap(line => {
+        const rows = textLines
+          .filter((_, r) => line.code[r] !== undefined)
+          .map((row, r) => [...row].map((x, i) => line.code[r]?.includes(i) ? x : ' ').join(''));
+        if (rows.length == 0) {
+          return [];
+        } else {
+          return [rows[0].padEnd(maxLen, " ") + `  ${commentChar} ` + line.input, ...rows.slice(1)]
+        }
+      })
+    ].join("\n");
 
   function programOnInput(e) {
     e.target.style.height = 0;
@@ -133,14 +133,14 @@
 
   <button class="btn" on:click={addLine}>Add Line</button>
 
-	<br />
-	<br />
+  <br />
+  <br />
 
-	<strong>Comment character:</strong>
-	<input bind:value={commentChar} class="border" />
+  <strong>Comment character:</strong>
+  <input bind:value={commentChar} class="border" />
 
-	<br />
-	<br />
+  <br />
+  <br />
 
   <div class="font-bold text-xl">Explanation</div>
 
