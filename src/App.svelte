@@ -11,6 +11,8 @@
 	let text = '';
 	$: textLines = text.split("\n");
 
+	let commentChar = "#";
+
 	let lines: Line[] = [];
 
 	let selectedLine: null | number = null;
@@ -73,7 +75,7 @@
 				if (rows.length == 0) {
 					return [];
 				} else {
-					return [rows[0].padEnd(maxLen, " ") + "  # " + line.input, ...rows.slice(1)]
+					return [rows[0].padEnd(maxLen, " ") + `  ${commentChar} ` + line.input, ...rows.slice(1)]
 				}
 			})
 		].join("\n");
@@ -130,6 +132,12 @@
 	<br />
 
 	<button class="btn" on:click={addLine}>Add Line</button>
+
+	<br />
+	<br />
+
+	<strong>Comment character:</strong>
+	<input bind:value={commentChar} class="border" />
 
 	<br />
 	<br />
