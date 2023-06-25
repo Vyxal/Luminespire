@@ -65,7 +65,6 @@
   }
 
   $: maxLen = Math.max(...textLines.map(r => r.length));
-  $: console.log(maxLen);
   $: explanation = [
       text,
       ...lines.flatMap(line => {
@@ -99,7 +98,10 @@
             class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.includes(c)}
             class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.includes(c)}
             on:click={() => select(r, c)}
+            on:keypress={() => select(r, c)}
             role="checkbox"
+            aria-checked={lines[selectedLine]?.code[r]?.includes(c)}
+            tabindex={c}
           >
             {char}
           </div>
@@ -118,7 +120,10 @@
           class:bg-gray-300={idx !== selectedLine}
           class:bg-blue-500={idx === selectedLine}
           on:click={() => (selectedLine = idx)}
+          on:keypress={() => (selectedLine = idx)}
           role="radio"
+          aria-checked={idx === selectedLine}
+          tabindex={idx}
         />
         <div>Line {idx + 1}</div>
         <div>{'{' + line.code.flatMap((row, r) => row?.map(c => textLines[r][c]) ?? []).join('') + '}'}</div>
