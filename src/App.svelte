@@ -84,8 +84,8 @@
 
 <div class="p-5">
   <h1 class="text-4xl font-bold text-center">Luminespire - The Explanation Assistant</h1>
-  <div class="font-bold">Program</div>
-  <textarea on:input={programOnInput} id="program" class="resize-none min-h-[50px] border border-gray-400 h-24 font-mono w-full max-w-md mt-4" bind:value={text} />
+  <div class="font-bold text-xl">Program</div>
+  <textarea on:input={programOnInput} id="program" class="resize-none min-h-[50px] border border-gray-400 p-2 h-24 font-mono w-full max-w-md mt-2 outline-none focus:ring rounded" bind:value={text} />
   <div class="flex-col gap-3">
     {#each textLines as row, r}
       <div class="flex flex-wrap gap-3 my-4">
@@ -104,7 +104,7 @@
     {/each}
   </div>
 
-  <strong>Lines</strong>
+  <div class="font-bold text-xl">Lines</div>
 
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
@@ -118,7 +118,7 @@
         />
         <div>Line {idx + 1}</div>
         <div>{'{' + line.code.flatMap((row, r) => row?.map(c => textLines[r][c]) ?? []).join('') + '}'}</div>
-        <textarea bind:value={line.input} class="border border-gray-400" />
+        <textarea bind:value={line.input} class="border border-gray-400 p-2 outline-none focus:ring rounded" />
         <button on:click={() => (lines.splice(idx, 1), (lines = lines))} class="btn">Remove</button>
         <button on:click={() => (line.code = [])} class="btn">Clear</button>
       </li>
@@ -132,8 +132,7 @@
   <br />
   <br />
 
-  <strong>Explanation</strong>
-  <br />
+  <div class="font-bold text-xl">Explanation</div>
 
-  <textarea readonly value={explanation} class="border border-gray-400 font-mono" cols="50" rows="10" />
+  <textarea readonly value={explanation} class="border border-gray-400 rounded p-2 outline-none font-mono mt-2" cols="50" rows="10" />
 </div>
