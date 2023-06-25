@@ -1,7 +1,11 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import Sortable from 'sortablejs';
+
 	interface Line {
 		code: number[];
 		input: string;
+		id: number;
 	}
 
 	let text = '';
@@ -13,10 +17,32 @@
 	function addLine() {
 		lines.push({
 			code: [],
-			input: ''
+			input: '',
+			id: Math.round(Math.random() * 1000) + new Date().getTime()
 		});
 		lines = lines;
 	}
+
+	let linesEl;
+
+	onMount(() => {
+		Sortable.create(linesEl, {
+			group: {
+				name: 'lines',
+				put: true,
+			},
+			animation: 200,
+			onEnd: ev => {
+				[lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
+				if (selectedLine === ev.oldIndex) {
+					selectedLine = ev.newIndex;
+				} else if (selectedLine === ev.newIndex) {
+					selectedLine = ev.oldIndex;
+				}
+				lines = lines;
+			}
+		});
+	});
 
 	function select(idx: number) {
 		if (selectedLine === null) return;
@@ -30,6 +56,8 @@
 	}
 
   $: explanation = [text, ...lines.map(line => [...text].map((x, i) => line.code.includes(i) ? x : ' ').join('') + "  # " + line.input)].join("\n");
+
+	$: console.log(lines);
 </script>
 
 <div class="p-5">
@@ -38,7 +66,7 @@
 	<textarea id="program" class="border border-gray-400 h-24 font-mono" bind:value={text} />
 
 	<div class="flex flex-wrap gap-3 my-4">
-		{#each text as char, idx}
+		{#each text as char, idx }
 			<div
 				class="text-lg cursor-pointer py-1 px-3"
 				class:bg-gray-200={selectedLine === null || !lines[selectedLine].code.includes(idx)}
@@ -53,8 +81,8 @@
 
 	<strong>Lines</strong>
 
-	<ul>
-		{#each lines as line, idx}
+	<ul bind:this={linesEl}>
+		{#each lines as line, idx (line.id)}
 			<li class="flex items-center gap-3">
 				<div
 					class="w-5 h-5 cursor-pointer"
