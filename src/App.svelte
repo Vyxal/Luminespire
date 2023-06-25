@@ -70,8 +70,8 @@
       text,
       ...lines.flatMap(line => {
         const rows = textLines
-          .filter((_, r) => line.code[r] !== undefined)
-          .map((row, r) => [...row].map((x, i) => line.code[r]?.includes(i) ? x : ' ').join(''));
+          .map((row, r) => line.code[r]?.length && [...row].map((x, i) => line.code[r]?.includes(i) ? x : ' ').join(''))
+          .filter(x => x);
         if (rows.length == 0) {
           return [];
         } else {
