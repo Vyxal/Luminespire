@@ -6,4 +6,9 @@
   .btn {
     @apply bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-lg;
   }
+
+  h1 {
+    @apply text-4xl font-bold text-center;
+  }
+
 }

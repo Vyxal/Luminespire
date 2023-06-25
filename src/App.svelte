@@ -24,6 +24,7 @@
 	}
 
 	let linesEl;
+	let programEl;
 
 	onMount(() => {
 		Sortable.create(linesEl, {
@@ -33,6 +34,7 @@
 			},
 			animation: 200,
 			onEnd: ev => {
+				if (lines.length <= 1) return;
 				[lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
 				if (selectedLine === ev.oldIndex) {
 					selectedLine = ev.newIndex;
@@ -42,6 +44,11 @@
 				lines = lines;
 			}
 		});
+		programEl.oninput = () => {
+	// Resize the textarea to fit the content
+	programEl.style.height = 0;
+	programEl.style.height = programEl.scrollHeight + 'px';
+  }
 	});
 
 	function select(idx: number) {
@@ -58,13 +65,19 @@
   $: explanation = [text, ...lines.map(line => [...text].map((x, i) => line.code.includes(i) ? x : ' ').join('') + "  # " + line.input)].join("\n");
 
 	$: console.log(lines);
+
+
+
+
 </script>
 
 <div class="p-5">
-	<strong>Program</strong>
-	<br />
-	<textarea id="program" class="border border-gray-400 h-24 font-mono" bind:value={text} />
-
+	<h1>Luminespire - The Explanation Assistant</h1>
+	<div class="space-y-4">
+			<strong>Program</strong>
+			<br/>
+			<textarea bind:this={programEl} id="program" class="resize-none hover:resize border border-gray-400 h-24 font-mono w-full h-fit" bind:value={text} />
+	</div>
 	<div class="flex flex-wrap gap-3 my-4">
 		{#each text as char, idx }
 			<div
