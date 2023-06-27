@@ -20,7 +20,7 @@ jobs:
 
       - name: build
         env:
-          BASE_PATH: "/Luminespire"
+          BASE_PATH: '/Luminespire'
         run: |
           npm run build
           touch dist/.nojekyll
@@ -28,7 +28,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "dist/"
+          path: 'dist/'
 
   deploy:
     needs: build_site
