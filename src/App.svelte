@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Sortable from 'sortablejs';
+  import TextArea from './TextArea.svelte';
 
   interface Line {
     code: number[][];
@@ -69,7 +70,7 @@
   $: explanation = [
     text,
     ...lines.flatMap((line) => {
-      const rows = textLines
+      let rows = textLines
         .map(
           (row, r) =>
             line.code[r]?.length &&
@@ -79,15 +80,21 @@
       if (rows.length == 0) {
         return [];
       } else {
-        return [rows[0].padEnd(maxLen, ' ') + `  ${commentChar} ` + line.input, ...rows.slice(1)];
+        const inputLines = line.input.split('\n');
+        if (inputLines.length > rows.length) {
+          // Pad lines of code in case explanation has more lines
+          rows.push(...Array(inputLines.length - rows.length).fill(' '));
+        }
+        return rows.map((row, i) => {
+          if (i < inputLines.length) {
+            return row.padEnd(maxLen, ' ') + `  ${commentChar} ` + inputLines[i];
+          } else {
+            return row;
+          }
+        });
       }
     })
   ].join('\n');
-
-  function resizeTextarea(e) {
-    e.target.style.height = 0;
-    e.target.style.height = e.target.scrollHeight + 10 + 'px';
-  }
 
   function resizeExplanationTextarea() {
     explanationEl.style.height = 0;
@@ -98,18 +105,13 @@
 <div class="p-5">
   <h1 class="text-4xl font-bold text-center">Luminespire - The Explanation Assistant</h1>
   <div class="font-bold text-xl">Program</div>
-  <textarea
-    on:input={resizeTextarea}
-    id="program"
-    class="resize-none min-h-[50px] border border-gray-400 p-2 h-24 font-mono w-full mt-2 outline-none focus:ring rounded"
-    bind:value={text}
-  />
+  <TextArea bind:value={text} class="min-h-[50px] p-2 h-24 w-full mt-2" />
   <div class="flex-col gap-3">
     {#each textLines as row, r}
       <div class="flex flex-wrap gap-3 my-4">
         {#each row as char, c}
           <div
-            class="text-lg cursor-pointer py-1 px-3"
+            class="text-lg cursor-pointer py-1 px-3 font-mono"
             class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.includes(c)}
             class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.includes(c)}
             on:click={() => select(r, c)}
@@ -118,7 +120,8 @@
             aria-checked={lines[selectedLine]?.code[r]?.includes(c)}
             tabindex={c}
           >
-            {char}
+            <!-- Need nbsp since spaces are trimmed -->
+            {char == ' ' ? '\xa0' : char}
           </div>
         {/each}
       </div>
@@ -146,10 +149,7 @@
           </code>
         </div>
         <div class="w-1/4">
-          <textarea
-            bind:value={line.input}
-            class="border border-gray-400 p-2 outline-none focus:ring rounded w-full"
-          />
+          <TextArea bind:value={line.input} class="p-2 w-full" />
         </div>
         <div>
           <button on:click={() => (lines.splice(idx, 1), (lines = lines))} class="btn"
