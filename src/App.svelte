@@ -22,7 +22,7 @@
     lines.push({
       code: [],
       input: '',
-      id: Math.round(Math.random() * 1000) + new Date().getTime()
+      id: Math.round(Math.random() * 1000) + new Date().getTime(),
     });
     lines = lines;
   }
@@ -33,11 +33,11 @@
     Sortable.create(linesEl, {
       group: {
         name: 'lines',
-        put: true
+        put: true,
       },
       animation: 200,
       chosenClass: 'cursor-grabbing',
-      onEnd: (ev) => {
+      onEnd: ev => {
         if (lines.length <= 1) return;
         [lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
         if (selectedLine === ev.oldIndex) {
@@ -46,7 +46,7 @@
           selectedLine = ev.oldIndex;
         }
         lines = lines;
-      }
+      },
     });
   });
 
@@ -66,17 +66,17 @@
     lines = lines;
   }
 
-  $: maxLen = Math.max(...textLines.map((r) => r.length));
+  $: maxLen = Math.max(...textLines.map(r => r.length));
   $: explanation = [
     text,
-    ...lines.flatMap((line) => {
-      let rows = textLines
+    ...lines.flatMap(line => {
+      const rows = textLines
         .map(
           (row, r) =>
             line.code[r]?.length &&
-            [...row].map((x, i) => (line.code[r]?.includes(i) ? x : ' ')).join('')
+            [...row].map((x, i) => (line.code[r]?.includes(i) ? x : ' ')).join(''),
         )
-        .filter((x) => x);
+        .filter(x => x);
       if (rows.length == 0) {
         return [];
       } else {
@@ -93,7 +93,7 @@
           }
         });
       }
-    })
+    }),
   ].join('\n');
 
   function resizeExplanationTextarea() {
@@ -103,23 +103,22 @@
 </script>
 
 <div class="p-5">
-  <h1 class="text-4xl font-bold text-center">Luminespire - The Explanation Assistant</h1>
-  <div class="font-bold text-xl">Program</div>
-  <TextArea bind:value={text} class="min-h-[50px] p-2 h-24 w-full mt-2" />
+  <h1 class="text-center text-4xl font-bold">Luminespire - The Explanation Assistant</h1>
+  <div class="text-xl font-bold">Program</div>
+  <TextArea bind:value={text} class="mt-2 h-24 min-h-[50px] w-full p-2" />
   <div class="flex-col gap-3">
     {#each textLines as row, r}
-      <div class="flex flex-wrap gap-3 my-4">
+      <div class="my-4 flex flex-wrap gap-3">
         {#each row as char, c}
           <div
-            class="text-lg cursor-pointer py-1 px-3 font-mono"
+            class="cursor-pointer px-3 py-1 font-mono text-lg"
             class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.includes(c)}
             class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.includes(c)}
             on:click={() => select(r, c)}
             on:keypress={() => select(r, c)}
             role="checkbox"
             aria-checked={lines[selectedLine]?.code[r]?.includes(c)}
-            tabindex={c}
-          >
+            tabindex={c}>
             <!-- Need nbsp since spaces are trimmed -->
             {char == ' ' ? '\xa0' : char}
           </div>
@@ -128,36 +127,33 @@
     {/each}
   </div>
 
-  <div class="font-bold text-xl">Lines</div>
+  <div class="text-xl font-bold">Lines</div>
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
-      <li class="flex grid-cols-4 items-center gap-3 cursor-grab">
+      <li class="flex cursor-grab grid-cols-4 items-center gap-3">
         <div
-          class="w-5 h-5 cursor-pointer"
+          class="h-5 w-5 cursor-pointer"
           class:bg-gray-300={idx !== selectedLine}
           class:bg-blue-500={idx === selectedLine}
           on:click={() => (selectedLine = idx)}
           on:keypress={() => (selectedLine = idx)}
           role="radio"
           aria-checked={idx === selectedLine}
-          tabindex={idx}
-        />
+          tabindex={idx} />
         <div class="w-1/8">Line {idx + 1}</div>
         <div class="w-1/4">
           <code
-            >{line.code.flatMap((row, r) => row?.map((c) => textLines[r][c]) ?? []).join('')}
+            >{line.code.flatMap((row, r) => row?.map(c => textLines[r][c]) ?? []).join('')}
           </code>
         </div>
         <div class="w-1/4">
-          <TextArea bind:value={line.input} class="p-2 w-full" />
+          <TextArea bind:value={line.input} class="w-full p-2" />
         </div>
         <div>
           <button on:click={() => (lines.splice(idx, 1), (lines = lines))} class="btn"
-            ><i class="fa-solid fa-xmark" /></button
-          >
+            ><i class="fa-solid fa-xmark" /></button>
           <button on:click={() => (line.code = [])} class="btn"
-            ><i class="fa-solid fa-arrows-rotate" /></button
-          >
+            ><i class="fa-solid fa-arrows-rotate" /></button>
         </div>
       </li>
     {/each}
@@ -170,23 +166,22 @@
   <br />
   <br />
 
-  <div class="font-bold text-xl">Comment character</div>
+  <div class="text-xl font-bold">Comment character</div>
   <input bind:value={commentChar} class="border" />
 
   <br />
   <br />
 
   <div class="grid grid-cols-1">
-    <div class="font-bold text-xl">Explanation</div>
+    <div class="text-xl font-bold">Explanation</div>
     <!-- make this text area expand upon input -->
     <textarea
       bind:this={explanationEl}
       readonly
       value={explanation}
-      class="border border-gray-400 rounded p-2 outline-none font-mono mt-2"
+      class="mt-2 rounded border border-gray-400 p-2 font-mono outline-none"
       cols="50"
       rows="10"
-      style="resize: none; height: 20px;"
-    />
+      style="resize: none; height: 20px;" />
   </div>
 </div>

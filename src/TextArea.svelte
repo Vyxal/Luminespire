@@ -12,6 +12,5 @@
 
 <textarea
   on:input={resizeTextarea}
-  class={`resize-none border border-gray-400 font-mono outline-none focus:ring rounded ${classProp}`}
-  bind:value
-/>
+  class={`resize-none rounded border border-gray-400 font-mono outline-none focus:ring ${classProp}`}
+  bind:value />
