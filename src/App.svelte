@@ -153,9 +153,11 @@
         </div>
         <div>
           <button on:click={() => (lines.splice(idx, 1), (lines = lines))} class="btn"
-            >Remove</button
+            ><i class="fa-solid fa-xmark" /></button
           >
-          <button on:click={() => (line.code = [])} class="btn">Clear</button>
+          <button on:click={() => (line.code = [])} class="btn"
+            ><i class="fa-solid fa-arrows-rotate" /></button
+          >
         </div>
       </li>
     {/each}
