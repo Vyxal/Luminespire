@@ -3,7 +3,7 @@
   import Sortable from 'sortablejs';
 
   interface Line {
-    code: number[][];
+    code: boolean[][];
     input: string;
     id: number;
   }
@@ -19,6 +19,7 @@
   let lines: Line[] = [];
 
   let selectedLine: null | number = null;
+  let prevSelect: [number, number] | null = null;
 
   function addLine() {
     lines.push({
@@ -52,18 +53,17 @@
     });
   });
 
-  function select(row: number, col: number) {
+  function select(row: number, col: number, shift: boolean) {
     resizeTextArea(explanationEl);
     if (selectedLine === null) return;
-    if (!lines[selectedLine].code[row]) {
-      lines[selectedLine].code[row] = [];
-    }
-    const index = lines[selectedLine].code[row].indexOf(col);
-    if (index >= 0) {
-      lines[selectedLine].code[row].splice(index, 1);
+    if (shift) {
+      let [prevRow, prevCol] = prevSelect;
+      // todo make it work with shift+click
     } else {
-      lines[selectedLine].code[row].push(col);
-      lines[selectedLine].code[row].sort((a, b) => a - b);
+      if (!lines[selectedLine].code[row]) {
+        lines[selectedLine].code[row] = [];
+      }
+      lines[selectedLine].code[row][col] = !lines[selectedLine].code[row][col];
     }
     lines = lines;
   }
@@ -75,8 +75,8 @@
       const rows = textLines
         .map(
           (row, r) =>
-            line.code[r]?.length &&
-            [...row].map((x, i) => (line.code[r]?.includes(i) ? x : ' ')).join(''),
+            line.code[r]?.includes(true) &&
+            [...row].map((x, i) => (line.code[r]?.[i] ? x : ' ')).join(''),
         )
         .filter(x => x);
       if (rows.length == 0) {
@@ -102,6 +102,13 @@
     textArea.style.height = 0;
     textArea.style.height = explanationEl.scrollHeight + 10 + 'px';
   }
+
+  function updatedSelectedLine(selected) {
+    if (selected !== selectedLine) {
+      selectedLine = selected;
+      prevSelect = null;
+    }
+  }
 </script>
 
 <div class="p-5">
@@ -117,12 +124,12 @@
         {#each row as char, c}
           <div
             class="cursor-pointer px-3 py-1 font-mono text-lg"
-            class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.includes(c)}
-            class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.includes(c)}
-            on:click={() => select(r, c)}
-            on:keypress={() => select(r, c)}
+            class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.[c]}
+            class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.[c]}
+            on:click={e => select(r, c, e.shiftKey)}
+            on:keypress={() => select(r, c, false)}
             role="checkbox"
-            aria-checked={lines[selectedLine]?.code[r]?.includes(c)}
+            aria-checked={lines[selectedLine]?.code[r]?.[c]}
             tabindex={c}>
             <!-- Need nbsp since spaces are trimmed -->
             {char == ' ' ? '\xa0' : char}
@@ -140,15 +147,17 @@
           class="h-5 w-5 cursor-pointer"
           class:bg-gray-300={idx !== selectedLine}
           class:bg-blue-500={idx === selectedLine}
-          on:click={() => (selectedLine = idx)}
-          on:keypress={() => (selectedLine = idx)}
+          on:click={() => updatedSelectedLine(idx)}
+          on:keypress={() => updatedSelectedLine(idx)}
           role="radio"
           aria-checked={idx === selectedLine}
           tabindex={idx} />
         <div class="w-1/8">Line {idx + 1}</div>
         <div class="w-1/4">
           <code
-            >{line.code.flatMap((row, r) => row?.map(c => textLines[r][c]) ?? []).join('')}
+            >{line.code
+              .flatMap((row, r) => row?.map((col, c) => (col ? textLines[r][c] : '')) ?? [])
+              .join('')}
           </code>
         </div>
         <div class="w-1/4">
