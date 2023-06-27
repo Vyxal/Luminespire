@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Sortable from 'sortablejs';
-  import TextArea from './TextArea.svelte';
 
   interface Line {
     code: number[][];
@@ -13,6 +12,9 @@
   $: textLines = text.split('\n');
 
   let commentChar = '#';
+
+  let textAreaClass =
+    'resize-none rounded border border-gray-400 font-mono outline-none focus:ring';
 
   let lines: Line[] = [];
 
@@ -51,7 +53,7 @@
   });
 
   function select(row: number, col: number) {
-    resizeExplanationTextarea();
+    resizeTextArea(explanationEl);
     if (selectedLine === null) return;
     if (!lines[selectedLine].code[row]) {
       lines[selectedLine].code[row] = [];
@@ -96,16 +98,19 @@
     }),
   ].join('\n');
 
-  function resizeExplanationTextarea() {
-    explanationEl.style.height = 0;
-    explanationEl.style.height = explanationEl.scrollHeight + 10 + 'px';
+  function resizeTextArea(textArea) {
+    textArea.style.height = 0;
+    textArea.style.height = explanationEl.scrollHeight + 10 + 'px';
   }
 </script>
 
 <div class="p-5">
   <h1 class="text-center text-4xl font-bold">Luminespire - The Explanation Assistant</h1>
   <div class="text-xl font-bold">Program</div>
-  <TextArea bind:value={text} class="mt-2 h-24 min-h-[50px] w-full p-2" />
+  <textarea
+    on:input={e => resizeTextArea(e.target)}
+    class={textAreaClass + ' mt-2 h-24 min-h-[50px] w-full p-2'}
+    bind:value={text} />
   <div class="flex-col gap-3">
     {#each textLines as row, r}
       <div class="my-4 flex flex-wrap gap-3">
@@ -147,7 +152,7 @@
           </code>
         </div>
         <div class="w-1/4">
-          <TextArea bind:value={line.input} class="w-full p-2" />
+          <textarea class={textAreaClass + ' w-full p-2'} bind:value={line.input} />
         </div>
         <div>
           <button on:click={() => (lines.splice(idx, 1), (lines = lines))} class="btn"
@@ -179,7 +184,7 @@
       bind:this={explanationEl}
       readonly
       value={explanation}
-      class="mt-2 rounded border border-gray-400 p-2 font-mono outline-none"
+      class={textAreaClass + ' mt-2'}
       cols="50"
       rows="10"
       style="resize: none; height: 20px;" />
