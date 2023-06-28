@@ -100,7 +100,7 @@
 
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
-    textArea.style.height = explanationEl.scrollHeight + 10 + 'px';
+    textArea.style.height = explanationEl.scrollHeight + 30 + 'px';
   }
 
   function updatedSelectedLine(selected) {
