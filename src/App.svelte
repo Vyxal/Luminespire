@@ -120,10 +120,10 @@
     bind:value={text} />
   <div class="flex-col gap-3">
     {#each textLines as row, r}
-      <div class="my-4 flex flex-wrap gap-3">
+      <div class="my-4 flex flex-wrap gap-1">
         {#each row as char, c}
           <div
-            class="cursor-pointer px-3 py-1 font-mono text-lg"
+            class="cursor-pointer px-2 py-1 font-mono text-lg"
             class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.[c]}
             class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.[c]}
             on:click={e => select(r, c, e.shiftKey)}
@@ -154,7 +154,7 @@
           tabindex={idx} />
         <div class="w-1/8">Line {idx + 1}</div>
         <div class="w-1/4">
-          <code
+          <code class="font-mono"
             >{line.code
               .flatMap((row, r) => row?.map((col, c) => (col ? textLines[r][c] : '')) ?? [])
               .join('')}
