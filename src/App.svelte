@@ -56,6 +56,10 @@
   function select(row: number, col: number, shift: boolean = false) {
     resizeTextArea(explanationEl);
     if (selectedLine === null) return;
+    if (!lines[selectedLine]) {
+      selectedLine = null;
+      return;
+    }
     const code = lines[selectedLine].code;
     if (!shift || !prevSelect) {
       if (!code[row]) {
@@ -121,7 +125,7 @@
     textArea.style.height = explanationEl.scrollHeight + 30 + 'px';
   }
 
-  function updatedSelectedLine(selected) {
+  function updateSelectedLine(selected) {
     if (selected !== selectedLine) {
       selectedLine = selected;
       prevSelect = null;
@@ -143,8 +147,8 @@
           {#each row as char, c}
             <div
               class="cursor-pointer select-none px-2 py-1 font-mono text-lg"
-              class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.[c]}
-              class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.[c]}
+              class:bg-gray-200={selectedLine === null || !lines[selectedLine]?.code[r]?.[c]}
+              class:bg-yellow-400={selectedLine !== null && lines[selectedLine]?.code[r]?.[c]}
               on:click={e => select(r, c, e.shiftKey)}
               on:keypress={() => select(r, c)}
               role="checkbox"
@@ -169,8 +173,8 @@
           class="h-5 w-5 cursor-pointer"
           class:bg-gray-300={idx !== selectedLine}
           class:bg-blue-500={idx === selectedLine}
-          on:click={() => updatedSelectedLine(idx)}
-          on:keypress={() => updatedSelectedLine(idx)}
+          on:click={() => updateSelectedLine(idx)}
+          on:keypress={() => updateSelectedLine(idx)}
           role="radio"
           aria-checked={idx === selectedLine}
           tabindex={idx} />
