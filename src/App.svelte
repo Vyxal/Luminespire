@@ -53,17 +53,35 @@
     });
   });
 
-  function select(row: number, col: number, shift: boolean) {
+  function select(row: number, col: number, shift: boolean = false) {
     resizeTextArea(explanationEl);
     if (selectedLine === null) return;
-    if (shift) {
-      let [prevRow, prevCol] = prevSelect;
-      // todo make it work with shift+click
-    } else {
-      if (!lines[selectedLine].code[row]) {
-        lines[selectedLine].code[row] = [];
+    const code = lines[selectedLine].code;
+    if (!shift || !prevSelect) {
+      if (!code[row]) {
+        code[row] = [];
       }
-      lines[selectedLine].code[row][col] = !lines[selectedLine].code[row][col];
+      code[row][col] = !code[row][col];
+      prevSelect = [row, col];
+    } else {
+      // Use Shift+Click to select or deselect multiple characters
+      let [prevRow, prevCol] = prevSelect;
+      let [[startRow, startCol], [endRow, endCol]] =
+        prevRow < row || (prevRow === row && prevCol < col)
+          ? [prevSelect, [row, col]]
+          : [[row, col], prevSelect];
+      // The new value of all the chars is the same as whatever the first selected char was
+      let setTo = Boolean(code[prevRow]?.[prevCol]);
+      for (let row = startRow; row <= endRow; row++) {
+        if (!code[row]) {
+          code[row] = [];
+        }
+        let start = row === startRow ? startCol : 0;
+        let end = row === endRow ? endCol : textLines[row].length - 1;
+        for (let col = start; col <= end; col++) {
+          code[row][col] = setTo;
+        }
+      }
     }
     lines = lines;
   }
@@ -127,7 +145,7 @@
             class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.[c]}
             class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.[c]}
             on:click={e => select(r, c, e.shiftKey)}
-            on:keypress={() => select(r, c, false)}
+            on:keypress={() => select(r, c)}
             role="checkbox"
             aria-checked={lines[selectedLine]?.code[r]?.[c]}
             tabindex={c}>
