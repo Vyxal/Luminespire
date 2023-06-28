@@ -136,23 +136,27 @@
     on:input={e => resizeTextArea(e.target)}
     class={textAreaClass + ' mt-2 h-24 min-h-[50px] w-full p-2'}
     bind:value={text} />
-  <div class="flex-col gap-3">
+  <div class="my-4 flex-col">
     {#each textLines as row, r}
-      <div class="my-4 flex flex-wrap gap-1">
-        {#each row as char, c}
-          <div
-            class="cursor-pointer px-2 py-1 font-mono text-lg"
-            class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.[c]}
-            class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.[c]}
-            on:click={e => select(r, c, e.shiftKey)}
-            on:keypress={() => select(r, c)}
-            role="checkbox"
-            aria-checked={lines[selectedLine]?.code[r]?.[c]}
-            tabindex={c}>
-            <!-- Need nbsp since spaces are trimmed -->
-            {char == ' ' ? '\xa0' : char}
-          </div>
-        {/each}
+      <div class="flex flex-wrap">
+        {#if row?.length}
+          {#each row as char, c}
+            <div
+              class="cursor-pointer select-none px-2 py-1 font-mono text-lg"
+              class:bg-gray-200={selectedLine === null || !lines[selectedLine].code[r]?.[c]}
+              class:bg-yellow-400={selectedLine !== null && lines[selectedLine].code[r]?.[c]}
+              on:click={e => select(r, c, e.shiftKey)}
+              on:keypress={() => select(r, c)}
+              role="checkbox"
+              aria-checked={lines[selectedLine]?.code[r]?.[c]}
+              tabindex={c}>
+              <!-- Need nbsp since spaces are trimmed -->
+              {char == ' ' ? '\xa0' : char}
+            </div>
+          {/each}
+        {:else}
+          <div class="select-none px-2 py-1 font-mono text-lg">&nbsp;</div>
+        {/if}
       </div>
     {/each}
   </div>
