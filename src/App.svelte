@@ -20,9 +20,8 @@
 
   let selectedLine: null | number = null;
   let prevSelect: [number, number] | null = null;
-  // The start and end of the range selected by the mouse
-  let tentativeSelect: [number, number, number, number] = null;
-  let mouseDown = false;
+  let touchStart: [number, number] = null;
+  let touchEnd: [number, number] = null;
 
   function addLine() {
     lines.push({
@@ -181,21 +180,6 @@
       prevSelect = null;
     }
   }
-
-  // From https://stackoverflow.com/a/48970682
-  function updateMouseState(e: MouseEvent) {
-    mouseDown = (e.buttons & 1) === 1;
-  }
-
-  document.addEventListener('mousedown', updateMouseState);
-  document.addEventListener('mousemove', updateMouseState);
-  document.addEventListener('mouseup', updateMouseState);
-
-  $: if (!mouseDown && tentativeSelect !== null && selectedLine !== null) {
-    selectRange(lines[selectedLine]?.code, ...tentativeSelect);
-    tentativeSelect = null;
-  }
-  // todo update mouseDown and tentativeSelect when mouse moves onto buttons
 </script>
 
 <div class="p-5">
@@ -216,6 +200,12 @@
               class:bg-yellow-400={selectedLine !== null && lines[selectedLine]?.code[r]?.[c]}
               on:click={e => select(r, c, e.shiftKey)}
               on:keypress={() => select(r, c)}
+              on:touchstart={() => (touchStart = [r, c])}
+              on:touchcancel={() => {
+                touchStart = null;
+                touchEnd = null;
+              }}
+              on:touchend={() => (touchEnd = [r, c])}
               role="checkbox"
               aria-checked={lines[selectedLine]?.code[r]?.[c]}
               tabindex={c}
