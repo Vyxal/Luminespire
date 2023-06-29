@@ -34,6 +34,17 @@
     lines = lines;
   }
 
+  function calculateSelection() {
+    console.log('calculateSelection()');
+    let selectedContent = window.getSelection();
+    if (selectedContent.anchorNode === null) return;
+    if (
+      selectedContent.anchorNode.parentElement.getAttribute('name') !== 'explanationCharacters' ||
+      selectedContent.focusNode.parentElement.getAttribute('name') !== 'explanationCharacters'
+    )
+      return;
+  }
+
   let linesEl;
   let explanationEl;
   onMount(() => {
@@ -169,22 +180,24 @@
     on:input={e => resizeTextArea(e.target)}
     class={textAreaClass + ' mt-2 h-24 min-h-[50px] w-full p-2'}
     bind:value={text} />
-  <div class="my-4 flex-col">
+  <div class="my-4 flex-col" on:mouseup={() => calculateSelection()}>
     {#each textLines as row, r}
       <div class="flex flex-wrap">
         {#if row?.length}
           {#each row as char, c}
             <div
-              class="cursor-pointer select-none px-2 py-1 font-mono text-lg"
+              class="cursor-pointer px-2 py-1 font-mono text-lg"
               class:bg-gray-200={selectedLine === null || !lines[selectedLine]?.code[r]?.[c]}
               class:bg-yellow-400={selectedLine !== null && lines[selectedLine]?.code[r]?.[c]}
               on:click={e => select(r, c, e.shiftKey)}
               on:keypress={() => select(r, c)}
               role="checkbox"
               aria-checked={lines[selectedLine]?.code[r]?.[c]}
-              tabindex={c}>
+              tabindex={c}
+              name="explanationCharcters">
               <!-- Need nbsp since spaces are trimmed -->
               {char == ' ' ? '\xa0' : char}
+              <input hidden value={r + ',' + c} type="checkbox" />
             </div>
           {/each}
         {:else}
