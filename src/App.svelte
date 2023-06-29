@@ -37,12 +37,37 @@
   function calculateSelection() {
     console.log('calculateSelection()');
     let selectedContent = window.getSelection();
-    if (selectedContent.anchorNode === null) return;
-    if (
-      selectedContent.anchorNode.parentElement.getAttribute('name') !== 'explanationCharacters' ||
-      selectedContent.focusNode.parentElement.getAttribute('name') !== 'explanationCharacters'
-    )
+    console.log(
+      selectedContent.anchorNode.parentElement.getAttribute('name') !== 'EC',
+      selectedContent.focusNode.parentElement.getAttribute('name') !== 'EC',
+    );
+    if (selectedContent.anchorNode === null) {
       return;
+    }
+    if (
+      selectedContent.anchorNode.parentElement.getAttribute('name') !== 'EC' ||
+      selectedContent.focusNode.parentElement.getAttribute('name') !== 'EC'
+    ) {
+      return;
+    }
+
+    if (selectedContent.toString() === '') {
+      return;
+    }
+
+    console.log("Y'all ready to get funky?");
+
+    let start = selectedContent.anchorNode.parentElement as HTMLElement;
+    let end = selectedContent.focusNode.parentElement.nextElementSibling as HTMLElement;
+
+    if (start === null || end === null) {
+      return;
+    }
+
+    do {
+      select(parseInt(start.getAttribute('row')), parseInt(start.getAttribute('tabindex')));
+      start = start.nextElementSibling as HTMLElement;
+    } while (start !== end);
   }
 
   let linesEl;
@@ -194,10 +219,10 @@
               role="checkbox"
               aria-checked={lines[selectedLine]?.code[r]?.[c]}
               tabindex={c}
-              name="explanationCharcters">
+              name="EC"
+              row={r}>
               <!-- Need nbsp since spaces are trimmed -->
               {char == ' ' ? '\xa0' : char}
-              <input hidden value={r + ',' + c} type="checkbox" />
             </div>
           {/each}
         {:else}
