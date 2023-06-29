@@ -20,6 +20,9 @@
 
   let selectedLine: null | number = null;
   let prevSelect: [number, number] | null = null;
+  // The start and end of the range selected by the mouse
+  let tentativeSelect: [number, number, number, number] = null;
+  let mouseDown = false;
 
   function addLine() {
     lines.push({
@@ -53,41 +56,51 @@
     });
   });
 
-  function select(row: number, col: number, shift: boolean = false) {
-    resizeTextArea(explanationEl);
-    if (selectedLine === null) return;
-    if (!lines[selectedLine]) {
-      selectedLine = null;
-      return;
+  function selectRange(
+    code: boolean[][],
+    startRow: number,
+    startCol: number,
+    endRow: number,
+    endCol: number,
+  ) {
+    // The new value of all the chars is the same as that of the first selected char
+    let setTo = Boolean(code[startRow]?.[startCol]);
+    if (startRow > endRow || (startRow === endRow && startCol > endCol)) {
+      // Swap the range start and end if necessary
+      let temp = startRow;
+      startRow = endRow;
+      endRow = temp;
+      temp = startCol;
+      startCol = endCol;
+      endCol = temp;
     }
+    for (let row = startRow; row <= endRow; row++) {
+      if (!code[row]) {
+        code[row] = [];
+      }
+      let start = row === startRow ? startCol : 0;
+      let end = row === endRow ? endCol : textLines[row].length - 1;
+      for (let col = start; col <= end; col++) {
+        code[row][col] = setTo;
+      }
+    }
+  }
+
+  function select(row: number, col: number, shift: boolean = false) {
+    if (selectedLine === null) return;
     const code = lines[selectedLine].code;
-    if (!shift || !prevSelect) {
+    if (shift && prevSelect) {
+      // Use Shift+Click to select or deselect multiple characters
+      selectRange(code, prevSelect[0], prevSelect[1], row, col);
+    } else {
       if (!code[row]) {
         code[row] = [];
       }
       code[row][col] = !code[row][col];
-      prevSelect = [row, col];
-    } else {
-      // Use Shift+Click to select or deselect multiple characters
-      let [prevRow, prevCol] = prevSelect;
-      let [[startRow, startCol], [endRow, endCol]] =
-        prevRow < row || (prevRow === row && prevCol < col)
-          ? [prevSelect, [row, col]]
-          : [[row, col], prevSelect];
-      // The new value of all the chars is the same as whatever the first selected char was
-      let setTo = Boolean(code[prevRow]?.[prevCol]);
-      for (let row = startRow; row <= endRow; row++) {
-        if (!code[row]) {
-          code[row] = [];
-        }
-        let start = row === startRow ? startCol : 0;
-        let end = row === endRow ? endCol : textLines[row].length - 1;
-        for (let col = start; col <= end; col++) {
-          code[row][col] = setTo;
-        }
-      }
     }
+    prevSelect = [row, col];
     lines = lines;
+    resizeTextArea(explanationEl);
   }
 
   $: maxLen = Math.max(...textLines.map(r => r.length));
@@ -131,6 +144,21 @@
       prevSelect = null;
     }
   }
+
+  // From https://stackoverflow.com/a/48970682
+  function updateMouseState(e: MouseEvent) {
+    mouseDown = (e.buttons & 1) === 1;
+  }
+
+  document.addEventListener('mousedown', updateMouseState);
+  document.addEventListener('mousemove', updateMouseState);
+  document.addEventListener('mouseup', updateMouseState);
+
+  $: if (!mouseDown && tentativeSelect !== null && selectedLine !== null) {
+    selectRange(lines[selectedLine]?.code, ...tentativeSelect);
+    tentativeSelect = null;
+  }
+  // todo update mouseDown and tentativeSelect when mouse moves onto buttons
 </script>
 
 <div class="p-5">
@@ -190,8 +218,15 @@
           <textarea class={textAreaClass + ' w-full p-2'} bind:value={line.input} />
         </div>
         <div>
-          <button on:click={() => (lines.splice(idx, 1), (lines = lines))} class="btn"
-            ><i class="fa-solid fa-xmark" /></button>
+          <button
+            on:click={() => {
+              lines.splice(idx, 1);
+              if (selectedLine === idx) {
+                selectedLine = null;
+              }
+              lines = lines;
+            }}
+            class="btn"><i class="fa-solid fa-xmark" /></button>
           <button on:click={() => (line.code = [])} class="btn"
             ><i class="fa-solid fa-arrows-rotate" /></button>
         </div>
