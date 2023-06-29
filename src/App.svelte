@@ -35,12 +35,7 @@
   }
 
   function calculateSelection() {
-    console.log('calculateSelection()');
     let selectedContent = window.getSelection();
-    console.log(
-      selectedContent.anchorNode.parentElement.getAttribute('name') !== 'EC',
-      selectedContent.focusNode.parentElement.getAttribute('name') !== 'EC',
-    );
     if (selectedContent.anchorNode === null) {
       return;
     }
@@ -54,8 +49,6 @@
     if (selectedContent.toString() === '') {
       return;
     }
-
-    console.log("Y'all ready to get funky?");
 
     let start = selectedContent.anchorNode.parentElement as HTMLElement;
     let end = selectedContent.focusNode.parentElement.nextElementSibling as HTMLElement;
