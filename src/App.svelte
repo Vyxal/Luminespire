@@ -13,8 +13,10 @@
 
   let commentChar = '#';
 
-  let textAreaClass =
+  const textAreaClass =
     'resize-none rounded border border-gray-400 font-mono outline-none focus:ring';
+  // Class used for identifying char buttons, not for Tailwind
+  const charClass = 'char';
 
   let lines: Line[] = [];
 
@@ -32,6 +34,9 @@
     updateSelectedLine(lines.length - 1);
     lines = lines;
   }
+
+  // Users will make at least one line anyway, so begin with one
+  addLine();
 
   function calculateSelection() {
     let selectedContent = window.getSelection();
@@ -85,24 +90,25 @@
     });
   });
 
+  /** Swap a range if the start comes after the end */
+  function swapRange([startRow, startCol], [endRow, endCol]) {
+    if (startRow > endRow || (startRow === endRow && startCol > endCol)) {
+      return [endRow, endCol, startRow, startCol];
+    } else {
+      return [startRow, startCol, endRow, endCol];
+    }
+  }
+
   function selectRange(
     code: boolean[][],
-    startRow: number,
-    startCol: number,
-    endRow: number,
-    endCol: number,
+    start: [number, number],
+    end: [number, number],
+    opposite: boolean,
   ) {
     // The new value of all the chars is the same as that of the first selected char
-    let setTo = Boolean(code[startRow]?.[startCol]);
-    if (startRow > endRow || (startRow === endRow && startCol > endCol)) {
-      // Swap the range start and end if necessary
-      let temp = startRow;
-      startRow = endRow;
-      endRow = temp;
-      temp = startCol;
-      startCol = endCol;
-      endCol = temp;
-    }
+    let setTo = Boolean(code[start[0]]?.[start[1]]);
+    if (opposite) setTo = !setTo;
+    const [startRow, startCol, endRow, endCol] = swapRange(start, end);
     for (let row = startRow; row <= endRow; row++) {
       if (!code[row]) {
         code[row] = [];
@@ -120,7 +126,7 @@
     const code = lines[selectedLine].code;
     if (shift && prevSelect) {
       // Use Shift+Click to select or deselect multiple characters
-      selectRange(code, prevSelect[0], prevSelect[1], row, col);
+      selectRange(code, prevSelect, [row, col], false);
     } else {
       if (!code[row]) {
         code[row] = [];
@@ -173,6 +179,35 @@
       prevSelect = null;
     }
   }
+
+  /** Check if a character is within an inclusive range */
+  function inTouchRange(row: number, col: number) {
+    if (touchStart === null || touchEnd === null) return false;
+    const [startRow, startCol, endRow, endCol] = swapRange(touchStart, touchEnd);
+    // todo kinda verbose
+    if (row === startRow && col < startCol) {
+      return false;
+    } else if (row === endRow && col > endCol) {
+      return false;
+    } else {
+      return startRow <= row && row <= endRow;
+    }
+  }
+
+  function onTouchMove(e: TouchEvent) {
+    const elem = document.elementFromPoint(
+      e.changedTouches[0].clientX,
+      e.changedTouches[0].clientY,
+    );
+    if (elem?.classList?.contains(charClass)) {
+      touchEnd = [parseInt(elem.getAttribute('row')), parseInt(elem.getAttribute('tabindex'))];
+      if (touchEnd[0] === touchStart[0] && touchEnd[1] === touchStart[1]) {
+        // Clicking a single character, not selecting multiple
+        touchEnd = null;
+      }
+      lines = lines;
+    }
+  }
 </script>
 
 <div class="p-5">
@@ -188,9 +223,16 @@
         {#if row?.length}
           {#each row as char, c}
             <div
-              class="cursor-pointer px-2 py-1 font-mono text-lg"
-              class:bg-gray-200={selectedLine === null || !lines[selectedLine]?.code[r]?.[c]}
-              class:bg-yellow-400={selectedLine !== null && lines[selectedLine]?.code[r]?.[c]}
+              class={`cursor-pointer touch-none px-2 py-1 font-mono text-lg ${charClass}`}
+              class:bg-gray-200={selectedLine === null ||
+                lines[selectedLine] === undefined ||
+                (!lines[selectedLine].code[r]?.[c] && !inTouchRange(r, c))}
+              class:bg-blue-500={selectedLine !== null &&
+                lines[selectedLine]?.code?.[r]?.[c] &&
+                !inTouchRange(r, c)}
+              class:bg-yellow-400={selectedLine !== null &&
+                lines[selectedLine] !== undefined &&
+                inTouchRange(r, c)}
               on:click={e => select(r, c, e.shiftKey)}
               on:keypress={() => select(r, c)}
               on:touchstart={() => (touchStart = [r, c])}
@@ -198,7 +240,8 @@
                 touchStart = null;
                 touchEnd = null;
               }}
-              on:touchend={() => (touchEnd = [r, c])}
+              on:touchmove={onTouchMove}
+              on:touchend={onTouchMove}
               role="checkbox"
               aria-checked={lines[selectedLine]?.code[r]?.[c]}
               tabindex={c}
@@ -215,7 +258,17 @@
     {/each}
   </div>
 
-  <button on:click={() => calculateSelection()} class="btn">Toggle Selection</button>
+  <button
+    on:click={() => {
+      calculateSelection();
+      if (touchStart !== null && touchEnd !== null && lines[selectedLine] !== undefined) {
+        selectRange(lines[selectedLine].code, touchStart, touchEnd, true);
+        touchStart = null;
+        touchEnd = null;
+        lines = lines;
+      }
+    }}
+    class="btn">Toggle Selection</button>
 
   <br /><br />
 
