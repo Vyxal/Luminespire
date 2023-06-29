@@ -200,12 +200,13 @@
       e.changedTouches[0].clientY,
     );
     if (elem?.classList?.contains(charClass)) {
-      touchEnd = [parseInt(elem.getAttribute('row')), parseInt(elem.getAttribute('tabindex'))];
-      if (touchEnd[0] === touchStart[0] && touchEnd[1] === touchStart[1]) {
-        // Clicking a single character, not selecting multiple
-        touchEnd = null;
+      const row = parseInt(elem.getAttribute('row'));
+      const col = parseInt(elem.getAttribute('tabindex'));
+      if (row !== touchStart[0] || col !== touchStart[1]) {
+        // Ensure selecting multiple rather than tapping single character
+        touchEnd = [row, col];
+        lines = lines;
       }
-      lines = lines;
     }
   }
 </script>
@@ -235,7 +236,10 @@
                 inTouchRange(r, c)}
               on:click={e => select(r, c, e.shiftKey)}
               on:keypress={() => select(r, c)}
-              on:touchstart={() => (touchStart = [r, c])}
+              on:touchstart={() => {
+                touchStart = [r, c];
+                touchEnd = null;
+              }}
               on:touchcancel={() => {
                 touchStart = null;
                 touchEnd = null;
