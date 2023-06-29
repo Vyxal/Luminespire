@@ -34,12 +34,7 @@
   }
 
   function calculateSelection() {
-    console.log('calculateSelection()');
     let selectedContent = window.getSelection();
-    console.log(
-      selectedContent.anchorNode.parentElement.getAttribute('name') !== 'EC',
-      selectedContent.focusNode.parentElement.getAttribute('name') !== 'EC',
-    );
     if (selectedContent.anchorNode === null) {
       return;
     }
@@ -53,8 +48,6 @@
     if (selectedContent.toString() === '') {
       return;
     }
-
-    console.log("Y'all ready to get funky?");
 
     let start = selectedContent.anchorNode.parentElement as HTMLElement;
     let end = selectedContent.focusNode.parentElement.nextElementSibling as HTMLElement;
@@ -221,6 +214,10 @@
       </div>
     {/each}
   </div>
+
+  <button on:click={() => calculateSelection()} class="btn">Toggle Selection</button>
+
+  <br /><br />
 
   <div class="text-xl font-bold">Lines</div>
   <ul bind:this={linesEl}>
