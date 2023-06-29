@@ -30,6 +30,7 @@
       input: '',
       id: Math.round(Math.random() * 1000) + new Date().getTime(),
     });
+    updateSelectedLine(lines.length - 1);
     lines = lines;
   }
 
