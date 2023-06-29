@@ -225,6 +225,8 @@
     {/each}
   </div>
 
+  <button on:click={() => calculateSelection()} class="btn">Toggle Selection</button>
+
   <div class="text-xl font-bold">Lines</div>
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
