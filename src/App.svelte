@@ -90,6 +90,8 @@
         code[row][col] = setTo;
       }
     }
+    resizeTextArea(explanationEl);
+    lines = lines;
   }
 
   function select(row: number, col: number, shift: boolean = false) {
@@ -141,7 +143,7 @@
 
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
-    textArea.style.height = explanationEl.scrollHeight + 30 + 'px';
+    textArea.style.height = ((textArea.scrollHeight + 30) as Number) + 'px';
   }
 
   function updateSelectedLine(selected) {
@@ -324,7 +326,7 @@
   <br />
 
   <div class="text-xl font-bold">Comment character</div>
-  <input bind:value={commentChar} class="border" />
+  <input bind:value={commentChar} class="border text-black" />
 
   <br />
   <br />
@@ -339,6 +341,6 @@
       class={textAreaClass + ' mt-2'}
       cols="50"
       rows="10"
-      style="resize: none; height: 20px;" />
+      style="resize: none; height: 50px" />
   </div>
 </div>
