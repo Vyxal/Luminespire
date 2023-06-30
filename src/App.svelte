@@ -280,7 +280,6 @@
           role="radio"
           aria-checked={idx === selectedLine}
           tabindex={idx} />
-        <div class="w-1/8">Line {idx + 1}</div>
         <div class="w-1/4">
           <code class="font-mono"
             >{line.code
