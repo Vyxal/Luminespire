@@ -196,13 +196,15 @@
 </script>
 
 <div class="p-5">
-  <h1 class="text-center text-4xl font-bold">Luminespire - The Explanation Assistant</h1>
+  <a href="https://github.com/Vyxal/Luminespire" class="text-center text-4xl font-bold">
+    <h1>Luminespire - The Explanation Assistant</h1>
+  </a>
   <div class="text-xl font-bold">Program</div>
   <textarea
     on:input={e => resizeTextArea(e.target)}
     class={textAreaClass + ' mt-2 h-24 min-h-[50px] w-full p-2'}
     bind:value={text} />
-  <div class="my-4 flex-col">
+  <div class="my-4 flex-col text-black">
     {#each textLines as row, r}
       <div class="flex flex-wrap">
         {#if row?.length}
@@ -212,7 +214,7 @@
               class:bg-gray-200={selectedLine === null ||
                 lines[selectedLine] === undefined ||
                 (!lines[selectedLine].code[r]?.[c] && !inTouchRange(r, c))}
-              class:bg-blue-500={selectedLine !== null &&
+              class:selectedChar={selectedLine !== null &&
                 lines[selectedLine]?.code?.[r]?.[c] &&
                 !inTouchRange(r, c)}
               class:bg-yellow-400={selectedLine !== null &&
@@ -268,13 +270,20 @@
   <br /><br />
 
   <div class="text-xl font-bold">Lines</div>
+  <div class="grid-cols-4 items-center gap-3 flex">
+    <p class="w-5 mr-36">Line</p>
+    <p class="w-1/4">Code</p>
+    <p class="w-1/4">Explanation</p>
+    <p class="w-1/4">Actions</p>
+  </div>
+  <br />
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
       <li class="flex cursor-grab grid-cols-4 items-center gap-3">
         <div
           class="h-5 w-5 cursor-pointer"
           class:bg-gray-300={idx !== selectedLine}
-          class:bg-blue-500={idx === selectedLine}
+          class:checkbox={idx === selectedLine}
           on:click={() => updateSelectedLine(idx)}
           on:keypress={() => updateSelectedLine(idx)}
           role="radio"

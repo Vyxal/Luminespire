@@ -4,6 +4,21 @@
 
 @layer components {
   .btn {
-    @apply bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-lg;
+    @apply bg-[#8970da] hover:bg-[#5432c3] text-white px-6 py-2 rounded-lg;
+  }
+  textarea {
+    @apply bg-[#7a7a7a] text-black px-6 py-2 rounded-lg;
+  }
+
+  body {
+    @apply bg-[#333333] text-white;
+  }
+
+  .checkbox {
+    @apply bg-[#5432c3]
+  }
+
+  .selectedChar {
+    @apply bg-[#af9ee6]
   }
 }
