@@ -38,35 +38,6 @@
   // Users will make at least one line anyway, so begin with one
   addLine();
 
-  function calculateSelection() {
-    let selectedContent = window.getSelection();
-    if (selectedContent.anchorNode === null) {
-      return;
-    }
-    if (
-      selectedContent.anchorNode.parentElement.getAttribute('name') !== 'EC' ||
-      selectedContent.focusNode.parentElement.getAttribute('name') !== 'EC'
-    ) {
-      return;
-    }
-
-    if (selectedContent.toString() === '') {
-      return;
-    }
-
-    let start = selectedContent.anchorNode.parentElement as HTMLElement;
-    let end = selectedContent.focusNode.parentElement.nextElementSibling as HTMLElement;
-
-    if (start === null || end === null) {
-      return;
-    }
-
-    do {
-      select(parseInt(start.getAttribute('row')), parseInt(start.getAttribute('tabindex')));
-      start = start.nextElementSibling as HTMLElement;
-    } while (start !== end);
-  }
-
   let linesEl;
   let explanationEl;
   onMount(() => {
@@ -209,6 +180,19 @@
       }
     }
   }
+
+  function onMouseMove(e: MouseEvent) {
+    const elem = document.elementFromPoint(e.clientX, e.clientY);
+    if (elem?.classList?.contains(charClass)) {
+      const row = parseInt(elem.getAttribute('row'));
+      const col = parseInt(elem.getAttribute('tabindex'));
+      if (row !== touchStart[0] || col !== touchStart[1]) {
+        // Ensure selecting multiple rather than tapping single character
+        touchEnd = [row, col];
+        lines = lines;
+      }
+    }
+  }
 </script>
 
 <div class="p-5">
@@ -218,13 +202,13 @@
     on:input={e => resizeTextArea(e.target)}
     class={textAreaClass + ' mt-2 h-24 min-h-[50px] w-full p-2'}
     bind:value={text} />
-  <div class="my-4 flex-col" on:mouseup={() => calculateSelection()}>
+  <div class="my-4 flex-col">
     {#each textLines as row, r}
       <div class="flex flex-wrap">
         {#if row?.length}
           {#each row as char, c}
             <div
-              class={`cursor-pointer touch-none px-2 py-1 font-mono text-lg ${charClass}`}
+              class={`cursor-pointer select-none touch-none px-2 py-1 font-mono text-lg ${charClass}`}
               class:bg-gray-200={selectedLine === null ||
                 lines[selectedLine] === undefined ||
                 (!lines[selectedLine].code[r]?.[c] && !inTouchRange(r, c))}
@@ -246,10 +230,18 @@
               }}
               on:touchmove={onTouchMove}
               on:touchend={onTouchMove}
+              on:mousemove={e => {
+                if (e.buttons === 1) {
+                  onMouseMove(e);
+                }
+              }}
+              on:mousedown={() => {
+                touchStart = [r, c];
+                touchEnd = null;
+              }}
               role="checkbox"
               aria-checked={lines[selectedLine]?.code[r]?.[c]}
               tabindex={c}
-              name="EC"
               row={r}>
               <!-- Need nbsp since spaces are trimmed -->
               {char == ' ' ? '\xa0' : char}
@@ -264,7 +256,6 @@
 
   <button
     on:click={() => {
-      calculateSelection();
       if (touchStart !== null && touchEnd !== null && lines[selectedLine] !== undefined) {
         selectRange(lines[selectedLine].code, touchStart, touchEnd, true);
         touchStart = null;
