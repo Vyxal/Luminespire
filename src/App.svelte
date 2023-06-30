@@ -6,6 +6,8 @@
     code: boolean[][];
     input: string;
     id: number;
+    padding: boolean;
+    useCommentChar: boolean;
   }
 
   let text = '';
@@ -30,6 +32,8 @@
       code: [],
       input: '',
       id: Math.round(Math.random() * 1000) + new Date().getTime(),
+      padding: true,
+      useCommentChar: true,
     });
     updateSelectedLine(lines.length - 1);
     lines = lines;
@@ -122,7 +126,7 @@
             [...row].map((x, i) => (line.code[r]?.[i] ? x : ' ')).join(''),
         )
         .filter(x => x);
-      if (rows.length == 0) {
+      if (rows.length == 0 && line.padding) {
         return [];
       } else {
         const inputLines = line.input.split('\n');
@@ -132,7 +136,14 @@
         }
         return rows.map((row, i) => {
           if (i < inputLines.length) {
-            return row.padEnd(maxLen, ' ') + `  ${commentChar} ` + inputLines[i];
+            if (!lines[i].padding) {
+              return `${lines[i].useCommentChar ? commentChar + ' ' : ''}${inputLines[i]}`;
+            }
+            return (
+              row.padEnd(maxLen, ' ') +
+              `  ${lines[i].useCommentChar ? commentChar + ' ' : ''}` +
+              inputLines[i]
+            );
           } else {
             return row;
           }
@@ -151,6 +162,17 @@
       selectedLine = selected;
       prevSelect = null;
     }
+  }
+
+  function paddingToggle(idx) {
+    lines[idx].padding = !lines[idx].padding;
+    resizeTextArea(explanationEl);
+    lines = lines;
+  }
+
+  function charToggle(idx) {
+    lines[idx].useCommentChar = !lines[idx].useCommentChar;
+    lines = lines;
   }
 
   /** Check if a character is within an inclusive range */
@@ -300,6 +322,13 @@
         </div>
         <div class="w-1/4">
           <textarea class={textAreaClass + ' w-full p-2'} bind:value={line.input} />
+        </div>
+        <div class="w-1/5">
+          <label
+            ><input type="checkbox" on:click={() => paddingToggle(idx)} />No leading padding</label>
+          <br />
+          <label
+            ><input type="checkbox" on:click={() => charToggle(idx)} />No comment character</label>
         </div>
         <div>
           <button
