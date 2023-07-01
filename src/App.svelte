@@ -224,6 +224,7 @@
     var sidebar = document.querySelector('.sidebar') as HTMLElement;
     sidebarShown = !sidebarShown;
     sidebar.style.left = sidebarShown ? '0' : '-25%';
+    sidebar.hidden = !sidebar.hidden;
   }
 
   function decode(str) {
@@ -243,7 +244,7 @@
 </script>
 
 <div class="p-5">
-  <div class="sidebar p-5">
+  <div class="w-max sm:w-1/4 sidebar p-5" hidden>
     <div>
       <div class="flex items-stretch">
         <i
@@ -254,17 +255,20 @@
       </div>
       <br />
       <div class="flex items-stretch">
-        <p class="text-xl font-bold pr-10">Comment character</p>
-        <input bind:value={commentChar} class="border text-black w-16" />
+        <p class="text-xl font-bold pr-5 sm:pr-10">Comment character</p>
+        <input bind:value={commentChar} class="border text-black w-12 sm:w-16" />
       </div>
     </div>
     <br />
     <div>
       <p class="text-xl font-bold">Import Options</p>
+      <br />
       <textarea class="mt-5" bind:value={importValue} />
-      <button class="btn mt-5" on:click={importFromVPA} on:keypress={importFromVPA}
+      <br />
+      <button class="btn mt-3 sm:mt-5" on:click={importFromVPA} on:keypress={importFromVPA}
         >Import from vyxal.pythonanywhere</button>
-      <button class="btn mt-5" on:click={importFromText} on:keypress={importFromText}
+      <br />
+      <button class="btn mt-3 sm:mt-5" on:click={importFromText} on:keypress={importFromText}
         >Import from Explanation</button>
     </div>
   </div>
