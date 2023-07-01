@@ -14,6 +14,8 @@
   $: textLines = text.split('\n');
 
   let commentChar = '#';
+  let sidebarShown = false;
+  let importValue = '';
 
   const textAreaClass =
     'resize-none rounded border border-gray-400 font-mono outline-none focus:ring';
@@ -217,12 +219,67 @@
       }
     }
   }
+
+  function toggleSidebar() {
+    var sidebar = document.querySelector('.sidebar') as HTMLElement;
+    sidebarShown = !sidebarShown;
+    sidebar.style.left = sidebarShown ? '0' : '-25%';
+  }
+
+  function decode(str) {
+    if (str) {
+      return JSON.parse(decodeURIComponent(escape(atob(str))));
+    } else {
+      return [];
+    }
+  }
+
+  function importFromVPA() {
+    const [flags, header, code, footer, inputs] = decode(window.location.hash.substring(1));
+    text = code;
+  }
+
+  function importFromText() {}
 </script>
 
 <div class="p-5">
-  <a href="https://github.com/Vyxal/Luminespire" class="text-center text-4xl font-bold">
-    <h1>Luminespire - The Explanation Assistant</h1>
-  </a>
+  <div class="sidebar p-5">
+    <div>
+      <div class="flex items-stretch">
+        <i
+          class="fa-solid fa-xmark text-2xl text-red-700 w-8"
+          on:click={toggleSidebar}
+          on:keypress={toggleSidebar} />
+        <strong class="text-2xl">Options</strong>
+      </div>
+      <br />
+      <div class="flex items-stretch">
+        <p class="text-xl font-bold pr-10">Comment character</p>
+        <input bind:value={commentChar} class="border text-black w-16" />
+      </div>
+    </div>
+    <br />
+    <div>
+      <p class="text-xl font-bold">Import Options</p>
+      <textarea class="mt-5" bind:value={importValue} />
+      <button class="btn mt-5" on:click={importFromVPA} on:keypress={importFromVPA}
+        >Import from vyxal.pythonanywhere</button>
+      <button class="btn mt-5" on:click={importFromText} on:keypress={importFromText}
+        >Import from Explanation</button>
+    </div>
+  </div>
+  <div class="flex items-baseline">
+    <div class="burger-menu" on:click={toggleSidebar} on:keypress={toggleSidebar}>
+      <div class="bar" />
+      <div class="bar" />
+      <div class="bar" />
+    </div>
+    <div class="clear-both w-full">
+      <a href="https://github.com/Vyxal/Luminespire" class="text-center text-4xl font-bold">
+        <h1>Luminespire - The Explanation Assistant</h1>
+      </a>
+    </div>
+  </div>
   <div class="text-xl font-bold">Program</div>
   <textarea
     on:input={e => resizeTextArea(e.target)}
@@ -350,12 +407,6 @@
   <br />
 
   <button class="btn" on:click={addLine}>Add Line</button>
-
-  <br />
-  <br />
-
-  <div class="text-xl font-bold">Comment character</div>
-  <input bind:value={commentChar} class="border text-black" />
 
   <br />
   <br />
