@@ -356,53 +356,54 @@
 
   <div class="text-xl font-bold">Lines</div>
   <div class="grid-cols-4 items-center gap-3 flex">
-    <p class="w-5 mr-36">Line</p>
+    <p class="w-5 mr-10 sm:mr-36">Line</p>
     <p class="w-1/4">Code</p>
     <p class="w-1/4">Explanation</p>
-    <p class="w-1/4">Actions</p>
   </div>
   <br />
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
-      <li class="flex cursor-grab grid-cols-4 items-center gap-3">
-        <div
-          class="h-5 w-5 cursor-pointer"
-          class:bg-gray-300={idx !== selectedLine}
-          class:checkbox={idx === selectedLine}
-          on:click={() => updateSelectedLine(idx)}
-          on:keypress={() => updateSelectedLine(idx)}
-          role="radio"
-          aria-checked={idx === selectedLine}
-          tabindex={idx} />
-        <div class="w-1/4">
-          <code class="font-mono"
-            >{line.code
+      <li class="sm:flex cursor-grab sm:grid-cols-2 sm:items-center gap-3">
+        <div class="flex w-full">
+          <div
+            class="h-5 w-5 cursor-pointer mr-10 sm:mr-36"
+            class:bg-gray-300={idx !== selectedLine}
+            class:checkbox={idx === selectedLine}
+            on:click={() => updateSelectedLine(idx)}
+            on:keypress={() => updateSelectedLine(idx)}
+            role="radio"
+            aria-checked={idx === selectedLine}
+            tabindex={idx} />
+          <div class="w-1/4 sm:w-72 sm:mr-20 font-mono overflow-x-auto break-words">
+            {line.code
               .flatMap((row, r) => row?.map((col, c) => (col ? textLines[r][c] : '')) ?? [])
               .join('')}
-          </code>
+          </div>
+          <div class="w-1/4 sm:w-1/2">
+            <textarea class={textAreaClass + ' sm:w-full'} bind:value={line.input} />
+          </div>
         </div>
-        <div class="w-1/4">
-          <textarea class={textAreaClass + ' w-full p-2'} bind:value={line.input} />
-        </div>
-        <div class="w-1/5">
-          <label
-            ><input type="checkbox" on:click={() => paddingToggle(idx)} />No leading padding</label>
-          <br />
-          <label
-            ><input type="checkbox" on:click={() => charToggle(idx)} />No comment character</label>
-        </div>
-        <div>
-          <button
-            on:click={() => {
-              lines.splice(idx, 1);
-              if (selectedLine === idx) {
-                selectedLine = null;
-              }
-              lines = lines;
-            }}
-            class="btn"><i class="fa-solid fa-xmark" /></button>
-          <button on:click={() => (line.code = [])} class="btn"
-            ><i class="fa-solid fa-arrows-rotate" /></button>
+        <div class="flex grid-cols-2 mt-20 sm:flex-none sm:mt-0">
+          <div class="w-1/5 mr-20 sm:mr-0">
+            <label
+              ><input type="checkbox" on:click={() => paddingToggle(idx)} />No leading padding</label>
+            <br />
+            <label
+              ><input type="checkbox" on:click={() => charToggle(idx)} />No comment character</label>
+          </div>
+          <div>
+            <button
+              on:click={() => {
+                lines.splice(idx, 1);
+                if (selectedLine === idx) {
+                  selectedLine = null;
+                }
+                lines = lines;
+              }}
+              class="btn"><i class="fa-solid fa-xmark" /></button>
+            <button on:click={() => (line.code = [])} class="btn"
+              ><i class="fa-solid fa-arrows-rotate" /></button>
+          </div>
         </div>
       </li>
     {/each}

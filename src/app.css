@@ -7,7 +7,7 @@
     @apply bg-[#8970da] hover:bg-[#5432c3] text-white px-6 py-2 rounded-lg;
   }
   textarea {
-    @apply bg-[#7a7a7a] text-black px-6 py-2 rounded-lg;
+    @apply bg-[#7a7a7a] text-black px-2 rounded-lg;
   }
 
   body {
