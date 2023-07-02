@@ -117,42 +117,47 @@
     resizeTextArea(explanationEl);
   }
 
+  let template = '';
+
   $: maxLen = Math.max(...textLines.map(r => r.length));
-  $: explanation = [
-    text,
-    ...lines.flatMap(line => {
-      const rows = textLines
-        .map(
-          (row, r) =>
-            line.code[r]?.includes(true) &&
-            [...row].map((x, i) => (line.code[r]?.[i] ? x : ' ')).join(''),
-        )
-        .filter(x => x);
-      if (rows.length == 0 && line.padding) {
-        return [];
-      } else {
-        const inputLines = line.input.split('\n');
-        if (inputLines.length > rows.length) {
-          // Pad lines of code in case explanation has more lines
-          rows.push(...Array(inputLines.length - rows.length).fill(' '));
-        }
-        return rows.map((row, i) => {
-          if (i < inputLines.length) {
-            if (!lines[i].padding) {
-              return `${lines[i].useCommentChar ? commentChar + ' ' : ''}${inputLines[i]}`;
-            }
-            return (
-              row.padEnd(maxLen, ' ') +
-              `  ${lines[i].useCommentChar ? commentChar + ' ' : ''}` +
-              inputLines[i]
-            );
-          } else {
-            return row;
+  $: explanation =
+    template +
+    [
+      text,
+      ...lines.flatMap(line => {
+        const rows = textLines
+          .map(
+            (row, r) =>
+              line.code[r]?.includes(true) &&
+              [...row].map((x, i) => (line.code[r]?.[i] ? x : ' ')).join(''),
+          )
+          .filter(x => x);
+        if (rows.length == 0 && line.padding) {
+          return [];
+        } else {
+          const inputLines = line.input.split('\n');
+          if (inputLines.length > rows.length) {
+            // Pad lines of code in case explanation has more lines
+            rows.push(...Array(inputLines.length - rows.length).fill(' '));
           }
-        });
-      }
-    }),
-  ].join('\n');
+          return rows.map((row, i) => {
+            if (i < inputLines.length) {
+              if (!lines[i].padding) {
+                return `${lines[i].useCommentChar ? commentChar + ' ' : ''}${inputLines[i]}`;
+              }
+              return (
+                row.padEnd(maxLen, ' ') +
+                `  ${lines[i].useCommentChar ? commentChar + ' ' : ''}` +
+                inputLines[i]
+              );
+            } else {
+              return row;
+            }
+          });
+        }
+      }),
+    ].join('\n') +
+    (template ? '\n```' : '');
 
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
@@ -236,11 +241,35 @@
   }
 
   function importFromVPA() {
-    const [flags, header, code, footer, inputs] = decode(window.location.hash.substring(1));
+    const [flags, header, code, footer, inputs] = decode(new URL(importValue).hash.slice(1));
     text = code;
+    sidebarShown = false;
+    var sidebar = document.querySelector('.sidebar') as HTMLElement;
+    sidebar.hidden = true;
+
+    template = `
+# [Vyxal](https://github.com/Vyxal/Vyxal)${flags ? ' `' + flags.join('') + '`' : ''}, ${
+      code.length
+    } bytes
+
+\`\`\`
+${code}
+\`\`\`
+
+[Try it online!](${importValue})
+
+## Explained
+
+\`\`\`
+`;
+    resizeTextArea(explanationEl);
   }
 
   function importFromText() {}
+
+  function copyExplanation() {
+    navigator.clipboard.writeText(explanation);
+  }
 </script>
 
 <div class="p-5">
@@ -431,5 +460,7 @@
       cols="50"
       rows="10"
       style="resize: none; height: 50px" />
+
+    <button class="btn mt-4" on:click={copyExplanation}>Click to copy to clipboard</button>
   </div>
 </div>
