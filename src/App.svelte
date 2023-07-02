@@ -265,7 +265,17 @@ ${code}
     resizeTextArea(explanationEl);
   }
 
-  function importFromText() {}
+  function importFromText() {
+    let explanationLines = importValue.split('\n');
+    if (explanationLines.includes('')) {
+      // Collect until first empty line
+      text = explanationLines.slice(0, explanationLines.indexOf('')).join('\n');
+      explanationLines = explanationLines.slice(explanationLines.indexOf('') + 1);
+    } else {
+      text = explanationLines[0];
+      explanationLines = explanationLines.slice(1);
+    }
+  }
 
   function copyExplanation() {
     navigator.clipboard.writeText(explanation);
