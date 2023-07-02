@@ -355,10 +355,10 @@
   <br /><br />
 
   <div class="text-xl font-bold">Lines</div>
-  <div class="grid-cols-4 items-center gap-3 flex">
-    <p class="w-5 mr-10 sm:mr-36">Line</p>
-    <p class="w-1/4">Code</p>
-    <p class="w-1/4">Explanation</p>
+  <div class="w-full flex">
+    <p class="w-6 mr-4">Line</p>
+    <p class="w-2/5">Code</p>
+    <p class="w-2/5 mr-4">Explanation</p>
   </div>
   <br />
   <ul bind:this={linesEl}>
@@ -420,7 +420,7 @@
 
   <button class="btn" on:click={addLine}>Add Line</button>
 
-  <div class="grid grid-cols-1">
+  <div class="grid grid-cols-1 mt-8">
     <div class="text-xl font-bold">Explanation</div>
     <!-- make this text area expand upon input -->
     <textarea
