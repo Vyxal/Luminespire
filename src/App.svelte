@@ -280,7 +280,7 @@
     </div>
     <div class="clear-both w-full">
       <a href="https://github.com/Vyxal/Luminespire" class="text-center text-4xl font-bold">
-        <h1>Luminespire - The Explanation Assistant</h1>
+        <h1>Luminespire</h1>
       </a>
     </div>
   </div>
@@ -363,10 +363,10 @@
   <br />
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
-      <li class="sm:flex cursor-grab sm:grid-cols-2 sm:items-center gap-3">
-        <div class="flex w-full">
+      <li class="cursor-grab">
+        <div class="w-full flex">
           <div
-            class="h-5 w-5 cursor-pointer mr-10 sm:mr-36"
+            class="cursor-pointer w-6 h-6 mr-4"
             class:bg-gray-300={idx !== selectedLine}
             class:checkbox={idx === selectedLine}
             on:click={() => updateSelectedLine(idx)}
@@ -374,35 +374,42 @@
             role="radio"
             aria-checked={idx === selectedLine}
             tabindex={idx} />
-          <div class="w-1/4 sm:w-72 sm:mr-20 font-mono overflow-x-auto break-words">
+          <div class="w-2/5 font-mono break-words overflow-auto">
             {line.code
               .flatMap((row, r) => row?.map((col, c) => (col ? textLines[r][c] : '')) ?? [])
               .join('')}
           </div>
-          <div class="w-1/4 sm:w-1/2">
-            <textarea class={textAreaClass + ' sm:w-full'} bind:value={line.input} />
+          <div class="w-2/5 mr-4">
+            <textarea class={textAreaClass + ' w-full'} bind:value={line.input} />
           </div>
-        </div>
-        <div class="flex grid-cols-2 mt-20 sm:flex-none sm:mt-0">
-          <div class="w-1/5 mr-20 sm:mr-0">
-            <label
-              ><input type="checkbox" on:click={() => paddingToggle(idx)} />No leading padding</label>
-            <br />
-            <label
-              ><input type="checkbox" on:click={() => charToggle(idx)} />No comment character</label>
-          </div>
-          <div>
-            <button
-              on:click={() => {
-                lines.splice(idx, 1);
-                if (selectedLine === idx) {
-                  selectedLine = null;
-                }
-                lines = lines;
-              }}
-              class="btn"><i class="fa-solid fa-xmark" /></button>
-            <button on:click={() => (line.code = [])} class="btn"
-              ><i class="fa-solid fa-arrows-rotate" /></button>
+          <div class="w-1/5 sm:grid sm:grid-cols-2">
+            <div class="grid grid-rows-2">
+              <div>
+                <label
+                  ><input type="checkbox" on:click={() => paddingToggle(idx)} />No padding</label>
+              </div>
+              <div>
+                <label
+                  ><input type="checkbox" on:click={() => charToggle(idx)} />No character</label>
+              </div>
+            </div>
+            <div class="">
+              <div>
+                <button
+                  on:click={() => {
+                    lines.splice(idx, 1);
+                    if (selectedLine === idx) {
+                      selectedLine = null;
+                    }
+                    lines = lines;
+                  }}
+                  class="btn"><i class="fa-solid fa-xmark" /></button>
+              </div>
+              <div>
+                <button on:click={() => (line.code = [])} class="btn"
+                  ><i class="fa-solid fa-arrows-rotate" /></button>
+              </div>
+            </div>
           </div>
         </div>
       </li>
@@ -412,9 +419,6 @@
   <br />
 
   <button class="btn" on:click={addLine}>Add Line</button>
-
-  <br />
-  <br />
 
   <div class="grid grid-cols-1">
     <div class="text-xl font-bold">Explanation</div>
