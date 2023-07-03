@@ -299,8 +299,7 @@ ${code}
     console.log(maxLen);
 
     for (let group of groups) {
-      const comment = group[group.length - 1].slice(maxLen + 3);
-      // console.log(group[group.length - 1], ' : ', comment);
+      const comment = group[group.length - 1].slice(maxLen + commentChar.length + 2);
       const codeBlock = group.slice(0, group.length - 1);
       codeBlock.push(group[group.length - 1].slice(0, maxLen));
       addLine();
