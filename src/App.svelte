@@ -404,13 +404,14 @@ ${code}
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
       <li class="cursor-grab">
-        <div class="w-full flex">
+        <div
+          class="w-full flex"
+          on:click={() => updateSelectedLine(idx)}
+          on:keypress={() => updateSelectedLine(idx)}>
           <div
             class="cursor-pointer w-6 h-6 mr-4 line-checkbox"
             class:bg-gray-300={idx !== selectedLine}
             class:checkbox={idx === selectedLine}
-            on:click={() => updateSelectedLine(idx)}
-            on:keypress={() => updateSelectedLine(idx)}
             role="radio"
             aria-checked={idx === selectedLine}
             tabindex={idx} />
