@@ -7,7 +7,9 @@
     input: string;
     id: number;
     padding: boolean;
+    noPadding: boolean;
     useCommentChar: boolean;
+    noComment: boolean;
   }
 
   let text = '';
@@ -35,7 +37,9 @@
       input: '',
       id: Math.round(Math.random() * 1000) + new Date().getTime(),
       padding: true,
+      noPadding: false,
       useCommentChar: true,
+      noComment: false,
     });
     updateSelectedLine(lines.length - 1);
     lines = lines;
@@ -174,12 +178,14 @@
 
   function paddingToggle(idx) {
     lines[idx].padding = !lines[idx].padding;
+    lines[idx].noPadding = !lines[idx].noPadding;
     resizeTextArea(explanationEl);
     lines = lines;
   }
 
   function charToggle(idx) {
     lines[idx].useCommentChar = !lines[idx].useCommentChar;
+    lines[idx].noComment = !lines[idx].noComment;
     lines = lines;
   }
 
@@ -296,16 +302,27 @@ ${code}
     }
 
     lines = [];
-    console.log(maxLen);
 
     for (let group of groups) {
       const comment = group[group.length - 1].slice(maxLen + commentChar.length + 3);
       const codeBlock = group.slice(0, group.length - 1);
       codeBlock.push(group[group.length - 1].slice(0, maxLen));
+
       addLine();
       selectedLine = lines[lines.length - 1].id;
+      // if all lines are blank, skip, marking the lines as "no padding"
+
+      if (group[0].startsWith(commentChar) && !textLines.some(x => x.startsWith(commentChar))) {
+        lines[lines.length - 1].padding = false;
+        lines[lines.length - 1].noPadding = true;
+        lines[lines.length - 1].input = group.join('\n').slice(commentChar.length + 1);
+        lines = lines;
+        explanation = explanation;
+        continue;
+      }
 
       lines[lines.length - 1].input = comment;
+
       for (let line of codeBlock) {
         let row = 0;
         for (let newline of textLines) {
@@ -328,6 +345,7 @@ ${code}
     }
 
     lines = lines;
+    explanation = explanation;
   }
 
   function copyExplanation() {
@@ -479,11 +497,20 @@ ${code}
             <div class="grid grid-rows-2">
               <div>
                 <label
-                  ><input type="checkbox" on:click={() => paddingToggle(idx)} />No padding</label>
+                  ><input
+                    type="checkbox"
+                    bind:checked={line.noPadding}
+                    on:click={() => {
+                      line.padding = !line.padding;
+                      line.noPadding = !line.noPadding;
+                    }} />No padding</label>
               </div>
               <div>
                 <label
-                  ><input type="checkbox" on:click={() => charToggle(idx)} />No character</label>
+                  ><input
+                    type="checkbox"
+                    bind:checked={line.noComment}
+                    on:click={() => charToggle(idx)} />No character</label>
               </div>
             </div>
             <div class="">
