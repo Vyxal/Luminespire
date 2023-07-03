@@ -307,22 +307,22 @@ ${code}
       selectedLine = lines[lines.length - 1].id;
 
       lines[lines.length - 1].input = comment;
-      let minRow = 0;
       for (let line of codeBlock) {
-        console.log('minRow', minRow, line);
-        if (!range(line.length).every(x => textLines[minRow][x] === line[x] || line[x] === ' ')) {
-          minRow++;
-        } else {
-          console.log('selecting', minRow, line);
-          let col = 0;
-          for (let char of line) {
-            if (textLines[minRow][col] === char) {
-              if (!lines[lines.length - 1].code[minRow]) {
-                lines[lines.length - 1].code[minRow] = [];
+        let row = 0;
+        for (let newline of textLines) {
+          if (!range(line.length).every(x => textLines[row][x] === line[x] || line[x] === ' ')) {
+            row++;
+          } else {
+            let col = 0;
+            for (let char of line) {
+              if (textLines[row][col] === char) {
+                if (!lines[lines.length - 1].code[row]) {
+                  lines[lines.length - 1].code[row] = [];
+                }
+                lines[lines.length - 1].code[row][col] = true;
               }
-              lines[lines.length - 1].code[minRow][col] = true;
+              col++;
             }
-            col++;
           }
         }
       }
