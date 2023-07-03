@@ -276,6 +276,21 @@ ${code}
       text = explanationLines[0];
       explanationLines = explanationLines.slice(1);
     }
+
+    let groups = [];
+    let group = [];
+    for (let line of explanationLines) {
+      group.push(line);
+      if (line.length > text.length) {
+        groups.push(group);
+        group = [];
+      }
+    }
+
+    if (group.length) {
+      groups.push(group);
+    }
+    console.log(groups);
   }
 
   function copyExplanation() {
