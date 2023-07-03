@@ -299,7 +299,7 @@ ${code}
     console.log(maxLen);
 
     for (let group of groups) {
-      const comment = group[group.length - 1].slice(maxLen + commentChar.length + 2);
+      const comment = group[group.length - 1].slice(maxLen + commentChar.length + 3);
       const codeBlock = group.slice(0, group.length - 1);
       codeBlock.push(group[group.length - 1].slice(0, maxLen));
       addLine();
@@ -314,7 +314,7 @@ ${code}
           } else {
             let col = 0;
             for (let char of line) {
-              if (textLines[row][col] === char) {
+              if (textLines[row][col] === char && char !== ' ') {
                 if (!lines[lines.length - 1].code[row]) {
                   lines[lines.length - 1].code[row] = [];
                 }
