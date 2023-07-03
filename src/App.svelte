@@ -277,11 +277,15 @@ ${code}
       explanationLines = explanationLines.slice(1);
     }
 
-    let groups = [];
+    textLines = text.split('\n');
+    let maxLen = Math.max(...textLines.map(x => x.length));
+
+    const range = n => Array.from({ length: n }, (value, key) => key);
+    let groups: Array<Array<String>> = [];
     let group = [];
     for (let line of explanationLines) {
       group.push(line);
-      if (line.length > text.length) {
+      if (line.length > maxLen) {
         groups.push(group);
         group = [];
       }
@@ -290,7 +294,41 @@ ${code}
     if (group.length) {
       groups.push(group);
     }
-    console.log(groups);
+
+    lines = [];
+    console.log(maxLen);
+
+    for (let group of groups) {
+      const comment = group[group.length - 1].slice(maxLen + 3);
+      // console.log(group[group.length - 1], ' : ', comment);
+      const codeBlock = group.slice(0, group.length - 1);
+      codeBlock.push(group[group.length - 1].slice(0, maxLen));
+      addLine();
+      selectedLine = lines[lines.length - 1].id;
+
+      lines[lines.length - 1].input = comment;
+      let minRow = 0;
+      for (let line of codeBlock) {
+        console.log('minRow', minRow, line);
+        if (!range(line.length).every(x => textLines[minRow][x] === line[x] || line[x] === ' ')) {
+          minRow++;
+        } else {
+          console.log('selecting', minRow, line);
+          let col = 0;
+          for (let char of line) {
+            if (textLines[minRow][col] === char) {
+              if (!lines[lines.length - 1].code[minRow]) {
+                lines[lines.length - 1].code[minRow] = [];
+              }
+              lines[lines.length - 1].code[minRow][col] = true;
+            }
+            col++;
+          }
+        }
+      }
+    }
+
+    lines = lines;
   }
 
   function copyExplanation() {
