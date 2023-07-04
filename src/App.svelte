@@ -292,7 +292,6 @@ ${code}
 
     text = text;
     textLines = text.split('\n');
-    console.log(text);
 
     if (importFromMetadata(importValue)) {
       return;
@@ -378,7 +377,6 @@ ${code}
         const [ignoreCode, noComment] = components[components.length - 1]
           .split(',')
           .map(x => x === '1');
-        console.log(JSON.parse(components[1]));
         const positions = ignoreCode
           ? []
           : JSON.parse(components[1]).map(x => x.map(y => parseInt(y, 4)));
@@ -664,7 +662,4 @@ ${code}
 
     <button class="btn mt-4" on:click={copyExplanation}>Click to copy to clipboard</button>
   </div>
-
-  <button class="btn" on:click={() => console.log(convertControlToMetadata(exportToMetadata()))}
-    >Export</button>
 </div>
