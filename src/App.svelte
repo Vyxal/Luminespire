@@ -17,6 +17,20 @@
   let sidebarShown = false;
   let importValue = '';
 
+  let invisCharToMetaLookup = {
+    '-': String.fromCharCode(0x00ad),
+    '|': String.fromCharCode(0x200b),
+    '/': String.fromCharCode(0x200c),
+    '[': String.fromCharCode(0x200e),
+    ']': String.fromCharCode(0x200f),
+    '"': String.fromCharCode(0x206a),
+    ',': String.fromCharCode(0x2060),
+    '0': String.fromCharCode(0x2061),
+    '1': String.fromCharCode(0x2062),
+    '2': String.fromCharCode(0x2063),
+    '3': String.fromCharCode(0x2064),
+  };
+
   const textAreaClass =
     'resize-none rounded border border-gray-400 font-mono outline-none focus:ring';
   // Class used for identifying char buttons, not for Tailwind
@@ -124,8 +138,8 @@
   $: explanation =
     template +
     [
-      text,
-      ...lines.flatMap(line => {
+      text + exportToMetadata() + (text.includes('\n') ? '\n' : ''),
+      ...lines.flatMap((line, idx) => {
         const rows = textLines
           .map(
             (row, r) =>
@@ -144,12 +158,16 @@
           }
           return rows.map((row, i) => {
             if (i < inputLines.length) {
-              if (lines[i].ignoreCode) {
-                return `${lines[i].noComment ? '' : commentChar + ' '}${inputLines[i]}`;
+              if (lines[idx].ignoreCode) {
+                return `${lines[idx].noComment ? '' : commentChar + ' '}${metadataToControl(
+                  '[' + idx.toString(4),
+                )}${inputLines[i]}`;
               }
               return (
                 row.padEnd(maxLen, ' ') +
-                `  ${lines[i].noComment ? '' : commentChar + ' '}` +
+                `  ${lines[idx].noComment ? '' : commentChar + ' '}${metadataToControl(
+                  '[' + idx.toString(4),
+                )}` +
                 inputLines[i]
               );
             } else {
@@ -266,13 +284,25 @@ ${code}
     if (explanationLines.includes('')) {
       // Collect until first empty line
       text = explanationLines.slice(0, explanationLines.indexOf('')).join('\n');
+
       explanationLines = explanationLines.slice(explanationLines.indexOf('') + 1);
     } else {
       text = explanationLines[0];
       explanationLines = explanationLines.slice(1);
     }
 
+    if (text.includes(invisCharToMetaLookup['-'])) {
+      text = text.slice(0, text.indexOf(invisCharToMetaLookup['-']));
+    }
+
+    text = text;
     textLines = text.split('\n');
+    console.log(text);
+
+    if (importFromMetadata(importValue)) {
+      return;
+    }
+
     let maxLen = Math.max(...textLines.map(x => x.length));
 
     const range = n => Array.from({ length: n }, (value, key) => key);
@@ -338,6 +368,116 @@ ${code}
 
   function copyExplanation() {
     navigator.clipboard.writeText(explanation);
+  }
+
+  function parseMetadata(data: String, prog: String) {
+    // -<line number>|[<code>]|<flags>/...-
+
+    data = data.slice(1, data.length - 1);
+    data
+      .split('/')
+      .filter(x => x)
+      .map(subdata => {
+        const components = subdata.split('|');
+        const lineNumber = parseInt(components[0], 4);
+        const [ignoreCode, noComment] = components[components.length - 1]
+          .split(',')
+          .map(x => x === '1');
+        console.log(JSON.parse(components[1]));
+        const positions = ignoreCode
+          ? []
+          : JSON.parse(components[1]).map(x => x.map(y => parseInt(y, 4)));
+
+        while (lines.length <= lineNumber) {
+          addLine();
+        }
+
+        const thisLine = lines[lineNumber];
+        selectedLine = lineNumber;
+        thisLine.ignoreCode = ignoreCode;
+        thisLine.noComment = noComment;
+        thisLine.code = [];
+        let input = prog.match(
+          new RegExp(`${metadataToControl('[' + lineNumber.toString(4))}(.*)\n?`),
+        );
+
+        console.log(positions);
+
+        if (input !== null) {
+          thisLine.input = input[1];
+        }
+        if (positions.length) {
+          for (let pos of positions) {
+            if (!thisLine.code[pos[0]]) {
+              thisLine.code[pos[0]] = [];
+            }
+            thisLine.code[pos[0]][pos[1]] = true;
+          }
+        }
+
+        lines = lines;
+      });
+  }
+
+  function convertControlToMetadata(text: String) {
+    function swapKeysAndValues(obj: Record<string, any>): Record<string, any> {
+      const swappedObj: Record<string, any> = {};
+
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const value = obj[key];
+          swappedObj[value] = key;
+        }
+      }
+
+      return swappedObj;
+    }
+    const invertedLookup = swapKeysAndValues(invisCharToMetaLookup);
+    let data = '';
+    for (let char of text) {
+      data += invertedLookup[char] || char;
+    }
+
+    return data;
+  }
+
+  function metadataToControl(text: String) {
+    let data = '';
+    for (let char of text) {
+      data += invisCharToMetaLookup[char] || char;
+    }
+
+    return data;
+  }
+
+  function exportToMetadata() {
+    let data = '-';
+    lines.map((line, idx) => {
+      if (line.code.length || line.ignoreCode) {
+        data += `${idx.toString(4)}|${JSON.stringify(
+          line.code
+            .map((row, rowIdx) =>
+              row.map((col, colIdx) =>
+                col == true ? [rowIdx.toString(4), colIdx.toString(4)] : undefined,
+              ),
+            )
+            .flat(),
+        )}|${line.ignoreCode ? '1' : '0'},${line.noComment ? '1' : '0'}/`;
+      }
+    });
+    data += '-';
+    return metadataToControl(data);
+  }
+
+  function importFromMetadata(text: String) {
+    const metadata = text.match(
+      new RegExp(`${invisCharToMetaLookup['-']}.*${invisCharToMetaLookup['-']}`),
+    );
+    if (metadata) {
+      parseMetadata(convertControlToMetadata(metadata[0]), text);
+      return true;
+    }
+    return false;
   }
 </script>
 
@@ -487,11 +627,7 @@ ${code}
                 <label><input type="checkbox" bind:checked={line.ignoreCode} />No code</label>
               </div>
               <div>
-                <label
-                  ><input
-                    type="checkbox"
-                    bind:checked={line.noComment}
-                    on:click={() => charToggle(idx)} />No character</label>
+                <label><input type="checkbox" bind:checked={line.noComment} />No character</label>
               </div>
             </div>
             <div class="">
@@ -535,4 +671,7 @@ ${code}
 
     <button class="btn mt-4" on:click={copyExplanation}>Click to copy to clipboard</button>
   </div>
+
+  <button class="btn" on:click={() => console.log(convertControlToMetadata(exportToMetadata()))}
+    >Export</button>
 </div>
