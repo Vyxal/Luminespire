@@ -135,47 +135,46 @@
   let languageMode = '';
 
   $: maxLen = Math.max(...textLines.map(r => r.length));
-  $: explanation =
-    [
-      text + exportToMetadata() + (text.includes('\n') ? '\n' : ''),
-      ...lines.flatMap((line, idx) => {
-        const rows = textLines
-          .map(
-            (row, r) =>
-              line.code[r]?.includes(true) &&
-              !line.ignoreCode &&
-              [...row].map((x, i) => (line.code[r]?.[i] ? x : ' ')).join(''),
-          )
-          .filter(x => x);
-        if (rows.length == 0 && !line.ignoreCode) {
-          return [];
-        } else {
-          const inputLines = line.input.split('\n');
-          if (inputLines.length > rows.length) {
-            // Pad lines of code in case explanation has more lines
-            rows.push(...Array(inputLines.length - rows.length).fill(' '));
-          }
-          return rows.map((row, i) => {
-            if (i < inputLines.length) {
-              if (lines[idx].ignoreCode) {
-                return `${lines[idx].noComment ? '' : commentChar + ' '}${metadataToControl(
-                  '[' + idx.toString(4),
-                )}${inputLines[i]}`;
-              }
-              return (
-                row.padEnd(maxLen, ' ') +
-                `  ${lines[idx].noComment ? '' : commentChar + ' '}${metadataToControl(
-                  '[' + idx.toString(4),
-                )}` +
-                inputLines[i]
-              );
-            } else {
-              return row;
-            }
-          });
+  $: explanation = [
+    text + exportToMetadata() + (text.includes('\n') ? '\n' : ''),
+    ...lines.flatMap((line, idx) => {
+      const rows = textLines
+        .map(
+          (row, r) =>
+            line.code[r]?.includes(true) &&
+            !line.ignoreCode &&
+            [...row].map((x, i) => (line.code[r]?.[i] ? x : ' ')).join(''),
+        )
+        .filter(x => x);
+      if (rows.length == 0 && !line.ignoreCode) {
+        return [];
+      } else {
+        const inputLines = line.input.split('\n');
+        if (inputLines.length > rows.length) {
+          // Pad lines of code in case explanation has more lines
+          rows.push(...Array(inputLines.length - rows.length).fill(' '));
         }
-      }),
-    ].join('\n') + (template ? '\n```' : '');
+        return rows.map((row, i) => {
+          if (i < inputLines.length) {
+            if (lines[idx].ignoreCode) {
+              return `${lines[idx].noComment ? '' : commentChar + ' '}${metadataToControl(
+                '[' + idx.toString(4),
+              )}${inputLines[i]}`;
+            }
+            return (
+              row.padEnd(maxLen, ' ') +
+              `  ${lines[idx].noComment ? '' : commentChar + ' '}${metadataToControl(
+                '[' + idx.toString(4),
+              )}` +
+              inputLines[i]
+            );
+          } else {
+            return row;
+          }
+        });
+      }
+    }),
+  ].join('\n');
 
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
