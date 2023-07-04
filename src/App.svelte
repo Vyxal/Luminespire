@@ -132,11 +132,10 @@
     resizeTextArea(explanationEl);
   }
 
-  let template = '';
+  let languageMode = '';
 
   $: maxLen = Math.max(...textLines.map(r => r.length));
   $: explanation =
-    template +
     [
       text + exportToMetadata() + (text.includes('\n') ? '\n' : ''),
       ...lines.flatMap((line, idx) => {
@@ -176,8 +175,7 @@
           });
         }
       }),
-    ].join('\n') +
-    (template ? '\n```' : '');
+    ].join('\n') + (template ? '\n```' : '');
 
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
@@ -255,22 +253,6 @@
     sidebarShown = false;
     var sidebar = document.querySelector('.sidebar') as HTMLElement;
     sidebar.hidden = true;
-
-    template = `
-# [Vyxal](https://github.com/Vyxal/Vyxal)${flags ? ' `' + flags.join('') + '`' : ''}, ${
-      code.length
-    } bytes
-
-\`\`\`
-${code}
-\`\`\`
-
-[Try it online!](${importValue})
-
-## Explained
-
-\`\`\`
-`;
     resizeTextArea(explanationEl);
   }
 
