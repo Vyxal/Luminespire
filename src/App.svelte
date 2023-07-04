@@ -191,11 +191,6 @@
     }
   }
 
-  function charToggle(idx) {
-    lines[idx].noComment = !lines[idx].noComment;
-    lines = lines;
-  }
-
   /** Check if a character is within an inclusive range */
   function inTouchRange(row: number, col: number) {
     if (touchStart === null || touchEnd === null) return false;
@@ -397,14 +392,12 @@ ${code}
         thisLine.ignoreCode = ignoreCode;
         thisLine.noComment = noComment;
         thisLine.code = [];
-        let input = prog.match(
-          new RegExp(`${metadataToControl('[' + lineNumber.toString(4))}(.*)\n?`),
+        let input = prog.matchAll(
+          new RegExp(`${metadataToControl('[' + lineNumber.toString(4))}(.*)\n?`, 'g'),
         );
 
-        console.log(positions);
-
         if (input !== null) {
-          thisLine.input = input[1];
+          thisLine.input = [...input].map(x => x[1]).join('\n');
         }
         if (positions.length) {
           for (let pos of positions) {
@@ -458,7 +451,7 @@ ${code}
           line.code
             .map((row, rowIdx) =>
               row.map((col, colIdx) =>
-                col == true ? [rowIdx.toString(4), colIdx.toString(4)] : undefined,
+                col == true ? [rowIdx.toString(4), colIdx.toString(4)] : '',
               ),
             )
             .flat(),
