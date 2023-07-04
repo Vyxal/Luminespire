@@ -6,9 +6,7 @@
     code: boolean[][];
     input: string;
     id: number;
-    padding: boolean;
-    noPadding: boolean;
-    useCommentChar: boolean;
+    ignoreCode: boolean;
     noComment: boolean;
   }
 
@@ -36,9 +34,7 @@
       code: [],
       input: '',
       id: Math.round(Math.random() * 1000) + new Date().getTime(),
-      padding: true,
-      noPadding: false,
-      useCommentChar: true,
+      ignoreCode: false,
       noComment: false,
     });
     updateSelectedLine(lines.length - 1);
@@ -134,10 +130,11 @@
           .map(
             (row, r) =>
               line.code[r]?.includes(true) &&
+              !line.ignoreCode &&
               [...row].map((x, i) => (line.code[r]?.[i] ? x : ' ')).join(''),
           )
           .filter(x => x);
-        if (rows.length == 0 && line.padding) {
+        if (rows.length == 0 && !line.ignoreCode) {
           return [];
         } else {
           const inputLines = line.input.split('\n');
@@ -147,12 +144,12 @@
           }
           return rows.map((row, i) => {
             if (i < inputLines.length) {
-              if (!lines[i].padding) {
-                return `${lines[i].useCommentChar ? commentChar + ' ' : ''}${inputLines[i]}`;
+              if (lines[i].ignoreCode) {
+                return `${lines[i].noComment ? '' : commentChar + ' '}${inputLines[i]}`;
               }
               return (
                 row.padEnd(maxLen, ' ') +
-                `  ${lines[i].useCommentChar ? commentChar + ' ' : ''}` +
+                `  ${lines[i].noComment ? '' : commentChar + ' '}` +
                 inputLines[i]
               );
             } else {
@@ -176,15 +173,7 @@
     }
   }
 
-  function paddingToggle(idx) {
-    lines[idx].padding = !lines[idx].padding;
-    lines[idx].noPadding = !lines[idx].noPadding;
-    resizeTextArea(explanationEl);
-    lines = lines;
-  }
-
   function charToggle(idx) {
-    lines[idx].useCommentChar = !lines[idx].useCommentChar;
     lines[idx].noComment = !lines[idx].noComment;
     lines = lines;
   }
@@ -313,8 +302,7 @@ ${code}
       // if all lines are blank, skip, marking the lines as "no padding"
 
       if (group[0].startsWith(commentChar) && !textLines.some(x => x.startsWith(commentChar))) {
-        lines[lines.length - 1].padding = false;
-        lines[lines.length - 1].noPadding = true;
+        lines[lines.length - 1].ignoreCode = true;
         lines[lines.length - 1].input = group.join('\n').slice(commentChar.length + 1);
         lines = lines;
         explanation = explanation;
@@ -496,14 +484,7 @@ ${code}
           <div class="w-1/5 sm:grid sm:grid-cols-2">
             <div class="grid grid-rows-2">
               <div>
-                <label
-                  ><input
-                    type="checkbox"
-                    bind:checked={line.noPadding}
-                    on:click={() => {
-                      line.padding = !line.padding;
-                      line.noPadding = !line.noPadding;
-                    }} />No padding</label>
+                <label><input type="checkbox" bind:checked={line.ignoreCode} />No code</label>
               </div>
               <div>
                 <label
