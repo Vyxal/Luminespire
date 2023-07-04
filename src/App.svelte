@@ -175,7 +175,7 @@
           });
         }
       }),
-    ].join('\n') + '\n created with the help of Luminespire at https://vyxal.github.io/Luminespire 💎';
+    ].join('\n') + '\n\nCreated with the help of Luminespire at https://vyxal.github.io/Luminespire 💎';
 
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
