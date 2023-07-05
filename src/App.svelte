@@ -68,7 +68,7 @@
       },
       animation: 200,
       chosenClass: 'cursor-grabbing',
-      handle: '.line-text',
+      handle: '.line',
       onEnd: ev => {
         if (lines.length <= 1) return;
         [lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
