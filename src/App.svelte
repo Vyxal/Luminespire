@@ -69,6 +69,7 @@
       animation: 200,
       chosenClass: 'cursor-grabbing',
       handle: '.line',
+      filter: '.line-textarea',
       onEnd: ev => {
         if (lines.length <= 1) return;
         [lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
@@ -590,7 +591,7 @@
               .join('')}
           </div>
           <div class="w-2/5 mr-4">
-            <textarea class={textAreaClass + ' w-full'} bind:value={line.input} />
+            <textarea class={textAreaClass + ' w-full line-textarea'} bind:value={line.input} />
           </div>
           <div class="w-1/5 sm:grid sm:grid-cols-2">
             <div class="grid grid-rows-2">
