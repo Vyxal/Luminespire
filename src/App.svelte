@@ -68,7 +68,6 @@
       },
       animation: 200,
       chosenClass: 'cursor-grabbing',
-      draggable: ':not(.line-textarea)',
       onEnd: ev => {
         if (lines.length <= 1) return;
         [lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
