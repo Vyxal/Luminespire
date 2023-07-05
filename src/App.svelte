@@ -68,7 +68,6 @@
       },
       animation: 200,
       chosenClass: 'cursor-grabbing',
-      handle: '.line',
       draggable: ':not(.line-textarea)',
       onEnd: ev => {
         if (lines.length <= 1) return;
