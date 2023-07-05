@@ -175,7 +175,8 @@
           });
         }
       }),
-    ].join('\n') + '\n\nCreated with the help of Luminespire at https://vyxal.github.io/Luminespire 💎';
+    ].join('\n') +
+    '\n\nCreated with the help of Luminespire at https://vyxal.github.io/Luminespire 💎';
 
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
@@ -475,9 +476,6 @@
       <p class="text-xl font-bold">Import Options</p>
       <br />
       <textarea class="mt-5" bind:value={importValue} />
-      <br />
-      <button class="btn mt-3 sm:mt-5" on:click={importFromVPA} on:keypress={importFromVPA}
-        >Import from vyxal.pythonanywhere</button>
       <br />
       <button class="btn mt-3 sm:mt-5" on:click={importFromText} on:keypress={importFromText}
         >Import from Explanation</button>
