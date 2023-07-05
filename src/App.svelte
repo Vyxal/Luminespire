@@ -68,6 +68,7 @@
       },
       animation: 200,
       chosenClass: 'cursor-grabbing',
+      handle: '.line-text',
       onEnd: ev => {
         if (lines.length <= 1) return;
         [lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
@@ -583,7 +584,7 @@
             role="radio"
             aria-checked={idx === selectedLine}
             tabindex={idx} />
-          <div class="w-2/5 font-mono break-words overflow-auto">
+          <div class="w-2/5 font-mono break-words overflow-auto line-text">
             {line.code
               .flatMap((row, r) => row?.map((col, c) => (col ? textLines[r][c] : '')) ?? [])
               .join('')}
