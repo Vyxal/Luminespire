@@ -68,7 +68,7 @@
       },
       animation: 200,
       chosenClass: 'cursor-grabbing',
-      handle: '.line-checkbox',
+      handle: '.line',
       onEnd: ev => {
         if (lines.length <= 1) return;
         [lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
@@ -572,7 +572,7 @@
   <br />
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
-      <li class="cursor-grab">
+      <li class="cursor-grab line">
         <div
           class="w-full flex"
           on:click={() => updateSelectedLine(idx)}
