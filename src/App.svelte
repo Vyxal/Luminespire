@@ -176,7 +176,7 @@
         }
       }),
     ].join('\n') +
-    '\n\nCreated with the help of Luminespire at https://vyxal.github.io/Luminespire 💎';
+    '\n\n💎 Created with the help of Luminespire at https://vyxal.github.io/Luminespire';
 
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
