@@ -68,7 +68,7 @@
       },
       animation: 200,
       chosenClass: 'cursor-grabbing',
-      handle: '.line-text',
+      handle: '.line-move',
       onEnd: ev => {
         if (lines.length <= 1) return;
         [lines[ev.oldIndex], lines[ev.newIndex]] = [lines[ev.newIndex], lines[ev.oldIndex]];
@@ -577,6 +577,7 @@
           class="w-full flex"
           on:click={() => updateSelectedLine(idx)}
           on:keypress={() => updateSelectedLine(idx)}>
+          <div><i class="fa-solid fa-grip mr-4 line-move" /></div>
           <div
             class="cursor-pointer w-6 h-6 mr-4 line-checkbox"
             class:bg-gray-300={idx !== selectedLine}
