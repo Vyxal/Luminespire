@@ -361,7 +361,6 @@
           .split(',')
           .map(x => x === '1');
 
-        console.log(JSON.parse(components[1]));
         const positions = ignoreCode
           ? []
           : JSON.parse(components[1])
