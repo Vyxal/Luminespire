@@ -360,9 +360,13 @@
         const [ignoreCode, noComment] = components[components.length - 1]
           .split(',')
           .map(x => x === '1');
+
+        console.log(JSON.parse(components[1]));
         const positions = ignoreCode
           ? []
-          : JSON.parse(components[1]).map(x => x.map(y => parseInt(y, 4)));
+          : JSON.parse(components[1])
+              .filter(x => x)
+              .map(x => x.map(y => parseInt(y, 4)));
 
         while (lines.length <= lineNumber) {
           addLine();
@@ -565,7 +569,7 @@
 
   <div class="text-xl font-bold">Lines</div>
   <div class="w-full flex">
-    <p class="w-6 mr-4">Line</p>
+    <p class="w-6 mr-8">Line</p>
     <p class="w-2/5">Code</p>
     <p class="w-2/5 mr-4">Explanation</p>
   </div>
