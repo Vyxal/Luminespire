@@ -377,8 +377,15 @@
         thisLine.noComment = noComment;
         thisLine.code = [];
         let input = prog.matchAll(
-          new RegExp(`${metadataToControl('[' + lineNumber.toString(4))}(.*)\n?`, 'g'),
+          new RegExp(
+            `${metadataToControl('[' + lineNumber.toString(4))}([^${metadataToControl(
+              '01234',
+            )}].*)\n?`,
+            'g',
+          ),
         );
+
+        // console.log([...input]);
 
         if (input !== null) {
           thisLine.input = [...input].map(x => x[1]).join('\n');
@@ -443,6 +450,7 @@
       }
     });
     data += '-';
+    // console.log(data);
     return metadataToControl(data);
   }
 
@@ -646,4 +654,5 @@
 
     <button class="btn mt-4" on:click={copyExplanation}>Click to copy to clipboard</button>
   </div>
+  <button on:click={exportToMetadata}>Export (debug)</button>
 </div>
