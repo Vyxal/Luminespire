@@ -385,8 +385,6 @@
           ),
         );
 
-        // console.log([...input]);
-
         if (input !== null) {
           thisLine.input = [...input].map(x => x[1]).join('\n');
         }
@@ -654,5 +652,6 @@
 
     <button class="btn mt-4" on:click={copyExplanation}>Click to copy to clipboard</button>
   </div>
-  <button on:click={exportToMetadata}>Export (debug)</button>
+  <!--
+  <button on:click={exportToMetadata}>Export (debug)</button>-->
 </div>
