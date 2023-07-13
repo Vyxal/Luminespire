@@ -137,7 +137,7 @@
   $: maxLen = Math.max(...textLines.map(r => r.length));
   $: explanation =
     [
-      text + exportToMetadata() + (text.includes('\n') ? '\n' : ''),
+      '```\n' + text + exportToMetadata() + (text.includes('\n') ? '\n' : ''),
       ...lines.flatMap((line, idx) => {
         const rows = textLines
           .map(
@@ -176,8 +176,7 @@
         }
       }),
     ].join('\n') +
-    '\n\n💎 Created with the help of Luminespire at https://vyxal.github.io/Luminespire';
-
+    '\n\n💎\n```\nCreated with the help of [Luminespire](https://vyxal.github.io/Luminespire)';
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
     textArea.style.height = ((textArea.scrollHeight + 30) as Number) + 'px';
