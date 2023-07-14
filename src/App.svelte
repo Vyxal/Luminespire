@@ -176,7 +176,7 @@
         }
       }),
     ].join('\n') +
-    '\n\n💎\n```\nCreated with the help of [Luminespire](https://vyxal.github.io/Luminespire)';
+    '\n```\n💎 Created with the help of [Luminespire](https://vyxal.github.io/Luminespire)';
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
     textArea.style.height = ((textArea.scrollHeight + 30) as Number) + 'px';
@@ -464,19 +464,19 @@
 </script>
 
 <div class="p-5">
-  <div class="w-max sm:w-1/4 sidebar p-5" hidden>
+  <div class="sidebar w-max p-5 sm:w-1/4" hidden>
     <div>
       <div class="flex items-stretch">
         <i
-          class="fa-solid fa-xmark text-2xl text-red-700 w-8"
+          class="fa-solid fa-xmark w-8 text-2xl text-red-700"
           on:click={toggleSidebar}
           on:keypress={toggleSidebar} />
         <strong class="text-2xl">Options</strong>
       </div>
       <br />
       <div class="flex items-stretch">
-        <p class="text-xl font-bold pr-5 sm:pr-10">Comment character</p>
-        <input bind:value={commentChar} class="border text-black w-12 sm:w-16" />
+        <p class="pr-5 text-xl font-bold sm:pr-10">Comment character</p>
+        <input bind:value={commentChar} class="w-12 border text-black sm:w-16" />
       </div>
     </div>
     <br />
@@ -512,7 +512,7 @@
         {#if row?.length}
           {#each row as char, c}
             <div
-              class={`cursor-pointer select-none touch-none px-2 py-1 font-mono text-lg ${charClass}`}
+              class={`cursor-pointer touch-none select-none px-2 py-1 font-mono text-lg ${charClass}`}
               class:bg-gray-200={selectedLine === null ||
                 lines[selectedLine] === undefined ||
                 (!lines[selectedLine].code[r]?.[c] && !inTouchRange(r, c))}
@@ -572,34 +572,34 @@
   <br /><br />
 
   <div class="text-xl font-bold">Lines</div>
-  <div class="w-full flex">
-    <p class="w-6 mr-8">Line</p>
+  <div class="flex w-full">
+    <p class="mr-8 w-6">Line</p>
     <p class="w-2/5">Code</p>
-    <p class="w-2/5 mr-4">Explanation</p>
+    <p class="mr-4 w-2/5">Explanation</p>
   </div>
   <br />
   <ul bind:this={linesEl}>
     {#each lines as line, idx (line.id)}
-      <li class="cursor-grab line">
+      <li class="line">
         <div
-          class="w-full flex"
+          class="flex w-full"
           on:click={() => updateSelectedLine(idx)}
           on:keypress={() => updateSelectedLine(idx)}>
-          <div><i class="fa-solid fa-grip mr-4 line-move" /></div>
+          <div><i class="fa-solid fa-grip line-move mr-4 cursor-grab" /></div>
           <div
-            class="cursor-pointer w-6 h-6 mr-4 line-checkbox"
+            class="line-checkbox mr-4 h-6 w-6 cursor-pointer"
             class:bg-gray-300={idx !== selectedLine}
             class:checkbox={idx === selectedLine}
             role="radio"
             aria-checked={idx === selectedLine}
             tabindex={idx} />
-          <div class="w-2/5 font-mono break-words overflow-auto line-text">
+          <div class="line-text w-2/5 overflow-auto break-words font-mono">
             {line.code
               .flatMap((row, r) => row?.map((col, c) => (col ? textLines[r][c] : '')) ?? [])
               .join('')}
           </div>
-          <div class="w-2/5 mr-4">
-            <textarea class={textAreaClass + ' w-full line-textarea'} bind:value={line.input} />
+          <div class="mr-4 w-2/5">
+            <textarea class={textAreaClass + ' line-textarea w-full'} bind:value={line.input} />
           </div>
           <div class="w-1/5 sm:grid sm:grid-cols-2">
             <div class="grid grid-rows-2">
@@ -637,7 +637,7 @@
 
   <button class="btn" on:click={addLine}>Add Line</button>
 
-  <div class="grid grid-cols-1 mt-8">
+  <div class="mt-8 grid grid-cols-1">
     <div class="text-xl font-bold">Explanation</div>
     <!-- make this text area expand upon input -->
     <textarea
