@@ -202,7 +202,7 @@
         }
       }),
     ].join('\n') +
-    '\n```\n💎 Created with the help of [Luminespire](https://vyxal.github.io/Luminespire)';
+    '\n💎\n```\nCreated with the help of [Luminespire](https://vyxal.github.io/Luminespire).';
   function resizeTextArea(textArea) {
     textArea.style.height = 0;
     textArea.style.height = ((textArea.scrollHeight + 30) as Number) + 'px';
