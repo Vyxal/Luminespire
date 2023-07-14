@@ -14,28 +14,4 @@
   body {
     @apply bg-neutral-50 dark:bg-[#333333] text-black dark:text-white;
   }
-
-  .checkbox {
-    @apply bg-[#5432c3]
-  }
-
-  .selectedChar {
-    @apply bg-[#af9ee6]
-  }
-
-  .sidebar {
-    width: 25%;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: -25%;
-    transition: left 0.3s;
-  }
-
-  .burger-menu {
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    margin: 20px;
-  }
 }

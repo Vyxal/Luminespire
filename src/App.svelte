@@ -526,7 +526,7 @@
   </div>
   <div class="flex items-baseline">
     <i
-      class="fa-solid fa-bars burger-menu text-2xl dark:text-white"
+      class="fa-solid fa-bars burger-menu cursor-pointer text-2xl dark:text-white"
       on:click={toggleSidebar}
       on:keypress={toggleSidebar} />
     <div class="clear-both w-full">
@@ -688,3 +688,28 @@
   <!--
   <button on:click={exportToMetadata}>Export (debug)</button>-->
 </div>
+
+<style>
+  .checkbox {
+    background-color: #5432c3;
+  }
+
+  .selectedChar {
+    background-color: #af9ee6;
+  }
+
+  .sidebar {
+    width: 25%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: -25%;
+    transition: left 0.3s;
+  }
+
+  .burger-menu {
+    width: 30px;
+    height: 30px;
+    margin: 20px;
+  }
+</style>
