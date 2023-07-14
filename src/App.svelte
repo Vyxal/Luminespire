@@ -85,7 +85,7 @@
   function shouldUseDark() {
     return 'theme' in localStorage
       ? localStorage.theme !== 'light'
-      : !window.matchMedia('(prefers-color-scheme: light)').matches
+      : !window.matchMedia('(prefers-color-scheme: light)').matches;
   }
   let selectedTheme: string = localStorage.theme || 'os';
   let darkTheme = shouldUseDark();
@@ -526,7 +526,7 @@
   </div>
   <div class="flex items-baseline">
     <i
-      class="burger-menu fa-solid fa-bars dark:text-white"
+      class="fa-solid fa-bars burger-menu text-2xl dark:text-white"
       on:click={toggleSidebar}
       on:keypress={toggleSidebar} />
     <div class="clear-both w-full">
