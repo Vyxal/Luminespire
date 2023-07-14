@@ -82,6 +82,32 @@
     });
   });
 
+  function shouldUseDark() {
+    return 'theme' in localStorage
+      ? localStorage.theme !== 'light'
+      : !window.matchMedia('(prefers-color-scheme: light)').matches
+  }
+  let selectedTheme: string = localStorage.theme || 'os';
+  let darkTheme = shouldUseDark();
+  $: {
+    if (selectedTheme === 'os') {
+      localStorage.removeItem('theme');
+    } else if (selectedTheme) {
+      localStorage.theme = selectedTheme;
+    }
+    darkTheme = shouldUseDark();
+  }
+  $: if (darkTheme) {
+    console.log('Using dark theme');
+    document.documentElement.classList.add('dark');
+  } else {
+    console.log('Using light theme');
+    document.documentElement.classList.remove('dark');
+  }
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+    darkTheme = !e.matches;
+  });
+
   /** Swap a range if the start comes after the end */
   function swapRange([startRow, startCol], [endRow, endCol]) {
     if (startRow > endRow || (startRow === endRow && startCol > endCol)) {
@@ -464,7 +490,7 @@
 </script>
 
 <div class="p-5">
-  <div class="sidebar w-max p-5 sm:w-1/4" hidden>
+  <div class="sidebar w-max bg-neutral-100 p-5 dark:bg-zinc-900 dark:text-white sm:w-1/4" hidden>
     <div>
       <div class="flex items-stretch">
         <i
@@ -483,18 +509,26 @@
     <div>
       <p class="text-xl font-bold">Import Options</p>
       <br />
-      <textarea class="mt-5" bind:value={importValue} />
+      <textarea class={textAreaClass + 'mt-5'} bind:value={importValue} />
       <br />
       <button class="btn mt-3 sm:mt-5" on:click={importFromText} on:keypress={importFromText}
         >Import from Explanation</button>
     </div>
+    <br />
+    <div>
+      <label for="theme" class="text-xl font-bold">Theme:</label>
+      <select bind:value={selectedTheme}>
+        <option value="os" selected={!('theme' in localStorage)}>Sync with OS</option>
+        <option value="dark" selected={localStorage.theme === 'dark'}>Dark</option>
+        <option value="light" selected={localStorage.theme === 'light'}>Light</option>
+      </select>
+    </div>
   </div>
   <div class="flex items-baseline">
-    <div class="burger-menu" on:click={toggleSidebar} on:keypress={toggleSidebar}>
-      <div class="bar" />
-      <div class="bar" />
-      <div class="bar" />
-    </div>
+    <i
+      class="burger-menu fa-solid fa-bars dark:text-white"
+      on:click={toggleSidebar}
+      on:keypress={toggleSidebar} />
     <div class="clear-both w-full">
       <a href="https://github.com/Vyxal/Luminespire" class="text-center text-4xl font-bold">
         <h1>Luminespire</h1>

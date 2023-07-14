@@ -6,12 +6,13 @@
   .btn {
     @apply bg-[#8970da] hover:bg-[#5432c3] text-white px-6 py-2 rounded-lg;
   }
+
   textarea {
-    @apply bg-[#7a7a7a] text-black px-2 rounded-lg;
+    @apply dark:bg-[#7a7a7a] text-black px-2 rounded-lg;
   }
 
   body {
-    @apply bg-[#333333] text-white;
+    @apply bg-neutral-50 dark:bg-[#333333] text-black dark:text-white;
   }
 
   .checkbox {
@@ -25,25 +26,16 @@
   .sidebar {
     width: 25%;
     height: 100vh;
-    background-color: #1a1a1a;
-    color: #fff;
     position: fixed;
     top: 0;
     left: -25%;
     transition: left 0.3s;
   }
-  
+
   .burger-menu {
     width: 30px;
     height: 30px;
     cursor: pointer;
     margin: 20px;
-  }
-
-  .bar {
-    width: 100%;
-    height: 4px;
-    background-color: #fff;
-    margin: 5px 0;    
   }
 }
