@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Sortable from 'sortablejs';
+  import TextArea from './TextArea.svelte';
 
   interface Line {
     code: boolean[][];
@@ -137,7 +138,6 @@
         code[row][col] = setTo;
       }
     }
-    resizeTextArea(explanationEl);
     lines = lines;
   }
 
@@ -155,7 +155,6 @@
     }
     prevSelect = [row, col];
     lines = lines;
-    resizeTextArea(explanationEl);
   }
 
   let languageMode = '';
@@ -203,10 +202,6 @@
       }),
     ].join('\n') +
     '\n💎\n```\nCreated with the help of [Luminespire](https://vyxal.github.io/Luminespire).';
-  function resizeTextArea(textArea) {
-    textArea.style.height = 0;
-    textArea.style.height = ((textArea.scrollHeight + 30) as Number) + 'px';
-  }
 
   function updateSelectedLine(selected) {
     if (selected !== selectedLine) {
@@ -279,7 +274,6 @@
     sidebarShown = false;
     var sidebar = document.querySelector('.sidebar') as HTMLElement;
     sidebar.hidden = true;
-    resizeTextArea(explanationEl);
   }
 
   function importFromText() {
@@ -502,14 +496,14 @@
       <br />
       <div class="flex items-stretch">
         <p class="pr-5 text-xl font-bold sm:pr-10">Comment character</p>
-        <input bind:value={commentChar} class="w-12 border text-black sm:w-16" />
+        <TextArea bind:value={commentChar} class="w-12 border sm:w-16" rows={1} />
       </div>
     </div>
     <br />
     <div>
       <p class="text-xl font-bold">Import Options</p>
       <br />
-      <textarea class={textAreaClass + 'mt-5'} bind:value={importValue} />
+      <TextArea class="mt-5" bind:value={importValue} />
       <br />
       <button class="btn mt-3 sm:mt-5" on:click={importFromText} on:keypress={importFromText}
         >Import from Explanation</button>
@@ -517,7 +511,7 @@
     <br />
     <div>
       <label for="theme" class="text-xl font-bold">Theme:</label>
-      <select bind:value={selectedTheme}>
+      <select bind:value={selectedTheme} class="bg-neutral-50 dark:bg-[#333333]">
         <option value="os" selected={!('theme' in localStorage)}>Sync with OS</option>
         <option value="dark" selected={localStorage.theme === 'dark'}>Dark</option>
         <option value="light" selected={localStorage.theme === 'light'}>Light</option>
@@ -536,10 +530,7 @@
     </div>
   </div>
   <div class="text-xl font-bold">Program</div>
-  <textarea
-    on:input={e => resizeTextArea(e.target)}
-    class={textAreaClass + ' mt-2 h-24 min-h-[50px] w-full p-2'}
-    bind:value={text} />
+  <TextArea class="mt-2 h-24 min-h-[50px] w-full p-2" bind:value={text} />
   <div class="my-4 flex-col text-black">
     {#each textLines as row, r}
       <div class="flex flex-wrap">
@@ -633,7 +624,7 @@
               .join('')}
           </div>
           <div class="mr-4 w-2/5">
-            <textarea class={textAreaClass + ' line-textarea w-full'} bind:value={line.input} />
+            <TextArea class="line-textarea w-full" bind:value={line.input} />
           </div>
           <div class="w-1/5 sm:grid sm:grid-cols-2">
             <div class="grid grid-rows-2">
@@ -674,14 +665,15 @@
   <div class="mt-8 grid grid-cols-1">
     <div class="text-xl font-bold">Explanation</div>
     <!-- make this text area expand upon input -->
-    <textarea
+    <TextArea
       bind:this={explanationEl}
       readonly
       value={explanation}
       class={textAreaClass + ' mt-2'}
-      cols="50"
-      rows="10"
-      style="resize: none; height: 50px" />
+      cols={50}
+      rows={10}
+      style="resize: none; height: 50px"
+      resizable={true} />
 
     <button class="btn mt-4" on:click={copyExplanation}>Click to copy to clipboard</button>
   </div>

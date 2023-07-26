@@ -6,16 +6,10 @@
   .btn {
     @apply bg-[#8970da] hover:bg-[#5432c3] text-white px-6 py-2 rounded-lg;
   }
+}
 
-  textarea {
-    @apply dark:bg-[#7a7a7a] text-black px-2 rounded-lg;
-  }
-
+@layer base {
   body {
     @apply bg-neutral-50 dark:bg-[#333333] text-black dark:text-white;
-  }
-
-  select {
-    @apply bg-neutral-50 dark:bg-[#333333];
   }
 }
