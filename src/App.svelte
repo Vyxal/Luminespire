@@ -83,9 +83,10 @@
   });
 
   function shouldUseDark() {
-    return 'theme' in localStorage
-      ? localStorage.theme !== 'light'
-      : !window.matchMedia('(prefers-color-scheme: light)').matches;
+    return true;
+    // return 'theme' in localStorage
+    //   ? localStorage.theme !== 'light'
+    //   : !window.matchMedia('(prefers-color-scheme: light)').matches;
   }
   let selectedTheme: string = localStorage.theme || 'os';
   let darkTheme = shouldUseDark();

@@ -14,4 +14,8 @@
   body {
     @apply bg-neutral-50 dark:bg-[#333333] text-black dark:text-white;
   }
+
+  select {
+    @apply bg-neutral-50 dark:bg-[#333333];
+  }
 }
