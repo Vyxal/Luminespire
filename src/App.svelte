@@ -478,10 +478,8 @@
 
 <div class="p-5">
   <Sidebar bind:commentChar {importFromText} bind:sidebarShown bind:selectedTheme />
-  <div class="w-full justify-center">
-    <a
-      href="https://github.com/Vyxal/Luminespire"
-      class="text-center text-4xl font-bold">
+  <div class="flex">
+    <a href="https://github.com/Vyxal/Luminespire" class="m-auto text-center text-4xl font-bold">
       <h1>Luminespire</h1>
     </a>
   </div>
