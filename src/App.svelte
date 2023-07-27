@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Sortable from 'sortablejs';
-  import TextArea from './TextArea.svelte';
-  import Header from './Header.svelte';
-  import { importFromText, exportToMetadata, metadataToControl } from './importExport';
-  import { newLine, type Line } from './Line';
+  import { importFromText, exportToMetadata, metadataToControl } from './lib/importExport';
+  import { newLine, type Line } from './lib/Line';
+  import TextArea from './lib/TextArea.svelte';
+  import Header from './lib/Header.svelte';
 
   let text = '';
   $: textLines = text.split('\n');

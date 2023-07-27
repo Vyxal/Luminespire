@@ -14,6 +14,3 @@
     </a>
   </div>
 </div>
-
-<style>
-</style>
