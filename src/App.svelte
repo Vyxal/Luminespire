@@ -478,7 +478,7 @@
 
 <div class="p-5">
   <Sidebar bind:commentChar {importFromText} bind:sidebarShown bind:selectedTheme />
-  <div class="flex">
+  <div class="flex bg-gray-100 dark:bg-black">
     <a href="https://github.com/Vyxal/Luminespire" class="m-auto text-center text-4xl font-bold">
       <h1>Luminespire</h1>
     </a>
