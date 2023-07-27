@@ -23,6 +23,9 @@
   $: value, resize();
 </script>
 
+<!--
+  @component A textarea that can automatically resize
+ -->
 <textarea
   bind:this={textArea}
   class={`resize-none rounded-lg border border-gray-400 px-2 font-mono text-black outline-none focus:ring dark:bg-[#7a7a7a] dark:text-white ${classProp}`}

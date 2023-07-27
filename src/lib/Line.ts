@@ -1,3 +1,6 @@
+/**
+ * Configuration for a line to be included in the explanation
+ */
 export interface Line {
   code: boolean[][];
   input: string;
