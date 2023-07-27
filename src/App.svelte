@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import Sortable from 'sortablejs';
   import TextArea from './TextArea.svelte';
+  import Sidebar from './Sidebar.svelte';
 
   interface Line {
     code: boolean[][];
@@ -16,7 +17,6 @@
 
   let commentChar = '#';
   let sidebarShown = false;
-  let importValue = '';
 
   let invisCharToMetaLookup = {
     '-': String.fromCharCode(0x00ad),
@@ -253,13 +253,6 @@
     }
   }
 
-  function toggleSidebar() {
-    var sidebar = document.querySelector('.sidebar') as HTMLElement;
-    sidebarShown = !sidebarShown;
-    sidebar.style.left = sidebarShown ? '0' : '-25%';
-    sidebar.hidden = !sidebar.hidden;
-  }
-
   function decode(str) {
     if (str) {
       return JSON.parse(decodeURIComponent(escape(atob(str))));
@@ -268,7 +261,7 @@
     }
   }
 
-  function importFromVPA() {
+  function importFromVPA(importValue: string) {
     const [flags, header, code, footer, inputs] = decode(new URL(importValue).hash.slice(1));
     text = code;
     sidebarShown = false;
@@ -276,7 +269,7 @@
     sidebar.hidden = true;
   }
 
-  function importFromText() {
+  function importFromText(importValue: string) {
     let explanationLines = importValue.split('\n');
     if (explanationLines.includes('')) {
       // Collect until first empty line
@@ -484,50 +477,13 @@
 </script>
 
 <div class="p-5">
-  <div class="sidebar w-max bg-neutral-100 p-5 dark:bg-zinc-900 dark:text-white sm:w-1/4" hidden>
-    <div>
-      <div class="flex items-stretch">
-        <i
-          class="fa-solid fa-xmark w-8 text-2xl text-red-700"
-          on:click={toggleSidebar}
-          on:keypress={toggleSidebar} />
-        <strong class="text-2xl">Options</strong>
-      </div>
-      <br />
-      <div class="flex items-stretch">
-        <p class="pr-5 text-xl font-bold sm:pr-10">Comment character</p>
-        <TextArea bind:value={commentChar} class="w-12 border sm:w-16" rows={1} />
-      </div>
-    </div>
-    <br />
-    <div>
-      <p class="text-xl font-bold">Import Options</p>
-      <br />
-      <TextArea class="mt-5" bind:value={importValue} />
-      <br />
-      <button class="btn mt-3 sm:mt-5" on:click={importFromText} on:keypress={importFromText}
-        >Import from Explanation</button>
-    </div>
-    <br />
-    <div>
-      <label for="theme" class="text-xl font-bold">Theme:</label>
-      <select bind:value={selectedTheme} class="bg-neutral-50 dark:bg-[#333333]">
-        <option value="os" selected={!('theme' in localStorage)}>Sync with OS</option>
-        <option value="dark" selected={localStorage.theme === 'dark'}>Dark</option>
-        <option value="light" selected={localStorage.theme === 'light'}>Light</option>
-      </select>
-    </div>
-  </div>
-  <div class="flex items-baseline">
-    <i
-      class="fa-solid fa-bars burger-menu cursor-pointer text-2xl dark:text-white"
-      on:click={toggleSidebar}
-      on:keypress={toggleSidebar} />
-    <div class="clear-both w-full">
-      <a href="https://github.com/Vyxal/Luminespire" class="text-center text-4xl font-bold">
-        <h1>Luminespire</h1>
-      </a>
-    </div>
+  <Sidebar bind:commentChar {importFromText} bind:sidebarShown bind:selectedTheme />
+  <div class="w-full justify-center">
+    <a
+      href="https://github.com/Vyxal/Luminespire"
+      class="text-center text-4xl font-bold">
+      <h1>Luminespire</h1>
+    </a>
   </div>
   <div class="text-xl font-bold">Program</div>
   <TextArea class="mt-2 h-24 min-h-[50px] w-full p-2" bind:value={text} />
@@ -688,20 +644,5 @@
 
   .selectedChar {
     background-color: #af9ee6;
-  }
-
-  .sidebar {
-    width: 25%;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: -25%;
-    transition: left 0.3s;
-  }
-
-  .burger-menu {
-    width: 30px;
-    height: 30px;
-    margin: 20px;
   }
 </style>
