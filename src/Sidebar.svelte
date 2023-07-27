@@ -1,9 +1,14 @@
 <script lang="ts">
-  import { slide } from 'svelte/transition';
+  import { fly, slide } from 'svelte/transition';
 
   export let sidebarShown: boolean = false;
+  /** class/classes for the stuff inside the sidebar */
+  export let contentClass: string = '';
 
   let sidebar: HTMLDivElement;
+
+  const slideDuration = 300;
+  const transitionDelay = 200;
 
   function toggleSidebar() {
     sidebarShown = !sidebarShown;
@@ -18,27 +23,35 @@
   on:keypress={toggleSidebar} />
 
 {#if sidebarShown}
-  <div
-    bind:this={sidebar}
-    class="sidebar w-max bg-neutral-100 p-5 dark:bg-zinc-900 dark:text-white sm:w-1/4"
-    transition:slide={{ duration: 300, axis: 'x' }}>
-    <br />
-    <br />
-    <slot />
+  <!-- This outer div covers the entire viewport and has a fixed position. This
+    allows the overlay to have a fixed position while still being positioned
+    relative to the sidebar (since both are children of this outer div)-->
+  <div class="invisible fixed inset-0 z-50 h-screen w-screen p-0">
+    <div
+      bind:this={sidebar}
+      class="visible relative left-0 top-0 h-screen w-screen bg-gray-50 p-5 dark:bg-zinc-900 sm:w-1/4"
+      in:slide={{ duration: slideDuration, axis: 'x' }}
+      out:slide={{ delay: transitionDelay, duration: slideDuration, axis: 'x' }}>
+      <br />
+      <br />
+      <div
+        class={contentClass}
+        in:fly={{ delay: transitionDelay, duration: slideDuration }}
+        out:fly={{ duration: slideDuration }}>
+        <slot />
+      </div>
+    </div>
+
+    <div
+      class="overlay visible relative left-0 top-0 h-screen w-screen bg-gray-200 dark:bg-black"
+      on:click={toggleSidebar}
+      on:keypress={toggleSidebar}>
+      foo
+    </div>
   </div>
 {/if}
 
 <style>
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 25%;
-    height: 100vh;
-    transition: 0.3s;
-    z-index: 50;
-  }
-
   .burger-menu {
     position: fixed;
     top: 0;
@@ -47,6 +60,5 @@
     width: 30px;
     height: 30px;
     margin: 20px;
-    cursor: pointer;
   }
 </style>

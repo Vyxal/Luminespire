@@ -35,7 +35,7 @@
   });
 </script>
 
-<Sidebar bind:sidebarShown>
+<Sidebar contentClass="text-black dark:text-white" bind:sidebarShown>
   <div>
     <div class="flex items-stretch">
       <strong class="text-2xl">Options</strong>
@@ -60,14 +60,14 @@
   <br />
   <div>
     <label for="theme" class="text-xl font-bold">Theme:</label>
-    <select bind:value={selectedTheme} class="bg-neutral-50 dark:bg-[#333333]">
+    <select bind:value={selectedTheme} class="bg-gray-100 dark:bg-[#333333]">
       <option value="os" selected={!('theme' in localStorage)}>Sync with OS</option>
       <option value="dark" selected={localStorage.theme === 'dark'}>Dark</option>
       <option value="light" selected={localStorage.theme === 'light'}>Light</option>
     </select>
   </div>
 </Sidebar>
-<div class="header bg-gray-100 dark:bg-black">
+<div class="header fixed left-0 top-0 z-10 w-screen bg-gray-100 pb-[15px] pt-[10px] dark:bg-black">
   <div class="flex">
     <a href="https://github.com/Vyxal/Luminespire" class="m-auto text-center text-4xl font-bold">
       <h1>Luminespire</h1>
@@ -76,12 +76,4 @@
 </div>
 
 <style>
-  .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    padding-top: 10px;
-    padding-bottom: 15px;
-  }
 </style>
