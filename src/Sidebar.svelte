@@ -23,6 +23,7 @@
     class="sidebar w-max bg-neutral-100 p-5 dark:bg-zinc-900 dark:text-white sm:w-1/4"
     transition:slide={{ duration: 300, axis: 'x' }}>
     <br />
+    <br />
     <slot />
   </div>
 {/if}
@@ -35,6 +36,7 @@
     width: 25%;
     height: 100vh;
     transition: 0.3s;
+    z-index: 50;
   }
 
   .burger-menu {

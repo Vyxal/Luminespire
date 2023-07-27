@@ -211,8 +211,9 @@
 </script>
 
 <div class="p-5">
-  <Header importFromText={doImportFromText} bind:commentChar bind:selectedTheme />
-  <div class="text-xl font-bold">Program</div>
+  <Header importFromText={doImportFromText} bind:commentChar />
+  <!-- TODO mt-14 is a bandaid fix to avoid the Luminespire header covering up the Program -->
+  <div class="mt-14 text-xl font-bold">Program</div>
   <TextArea class="mt-2 h-24 min-h-[50px] w-full p-2" bind:value={text} />
   <div class="my-4 flex-col text-black">
     {#each textLines as row, r}
