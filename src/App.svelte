@@ -31,7 +31,6 @@
   addLine();
 
   let linesEl;
-  let explanationEl;
   onMount(() => {
     Sortable.create(linesEl, {
       group: {
@@ -101,8 +100,6 @@
     prevSelect = [row, col];
     lines = lines;
   }
-
-  let languageMode = '';
 
   $: maxLen = Math.max(...textLines.map(r => r.length));
   $: explanation =
@@ -205,6 +202,7 @@
   function doImportFromText(text: string) {
     const res = importFromText(text, commentChar);
     text = res.prog;
+    console.log(`text ${text}!`);
     lines = res.lines;
     selectedLine = res.selectedLine ?? selectedLine;
   }
@@ -350,7 +348,6 @@
     <div class="text-xl font-bold">Explanation</div>
     <!-- make this text area expand upon input -->
     <TextArea
-      bind:this={explanationEl}
       readonly
       value={explanation}
       class="mt-2"

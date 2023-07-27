@@ -123,22 +123,33 @@ function importFromMetadata(text: string): ImportRes | null {
 }
 
 export function importFromText(importValue: string, commentChar: string): ImportRes {
+  console.log(`importValue: ${importValue}`);
   const fromMetadata = importFromMetadata(importValue);
   if (fromMetadata) {
     return fromMetadata;
   }
 
-  let explanationLines = importValue.split('\n');
   let text: string;
-  if (explanationLines.includes('')) {
+  let explanationLines = importValue.split('\n');
+  const emptyLine = explanationLines.indexOf('');
+  if (emptyLine !== -1) {
     // Collect until first empty line
-    text = explanationLines.slice(0, explanationLines.indexOf('')).join('\n');
-
-    explanationLines = explanationLines.slice(explanationLines.indexOf('') + 1);
+    text = explanationLines.slice(0, emptyLine).join('\n');
+    explanationLines = explanationLines.slice(emptyLine + 1);
   } else {
-    text = explanationLines[0];
-    explanationLines = explanationLines.slice(1);
+    const commentIndex = explanationLines.findIndex(x => x.includes(commentChar));
+    if (commentIndex !== -1) {
+      // Collect until first comment
+      text = explanationLines.slice(0, commentIndex).join('\n');
+      explanationLines = explanationLines.slice(commentIndex);
+    } else {
+      text = explanationLines[0];
+      explanationLines = explanationLines.slice(1);
+    }
   }
+
+  console.log(`Text is ${text}`);
+  console.log(explanationLines);
 
   if (text.includes(invisCharToMetaLookup['-'])) {
     text = text.slice(0, text.indexOf(invisCharToMetaLookup['-']));
@@ -146,9 +157,12 @@ export function importFromText(importValue: string, commentChar: string): Import
 
   const textLines = text.split('\n');
 
-  let maxLen = Math.max(...textLines.map(x => x.length));
+  const maxLen = Math.max(...textLines.map(x => x.length));
 
-  const range = n => Array.from({ length: n }, (value, key) => key);
+  function range(n) {
+    return Array.from({ length: n }, (value, key) => key);
+  }
+
   let groups: Array<Array<String>> = [];
   let group = [];
   for (let line of explanationLines) {
@@ -166,8 +180,11 @@ export function importFromText(importValue: string, commentChar: string): Import
   let selectedLine: number;
   const lines = [];
 
+  console.log(groups);
+
   for (let group of groups) {
-    const comment = group[group.length - 1].slice(maxLen + commentChar.length + 3);
+    const commentInd = group[group.length - 1].indexOf(commentChar);
+    const comment = group[group.length - 1].slice(commentInd + 1).trimStart();
     const codeBlock = group.slice(0, group.length - 1);
     codeBlock.push(group[group.length - 1].slice(0, maxLen));
 
@@ -203,6 +220,8 @@ export function importFromText(importValue: string, commentChar: string): Import
       }
     }
   }
+
+  console.log(lines);
 
   return { prog: text, selectedLine, lines };
 }
