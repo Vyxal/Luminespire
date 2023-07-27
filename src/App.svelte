@@ -11,8 +11,6 @@
 
   let commentChar = '#';
 
-  const textAreaClass =
-    'resize-none rounded border border-gray-400 font-mono outline-none focus:ring';
   // Class used for identifying char buttons, not for Tailwind
   const charClass = 'char';
 
@@ -54,32 +52,6 @@
         lines = lines;
       },
     });
-  });
-
-  function shouldUseDark() {
-    return 'theme' in localStorage
-      ? localStorage.theme !== 'light'
-      : !window.matchMedia('(prefers-color-scheme: light)').matches;
-  }
-  let selectedTheme: string = localStorage.theme || 'os';
-  let darkTheme = shouldUseDark();
-  $: {
-    if (selectedTheme === 'os') {
-      localStorage.removeItem('theme');
-    } else if (selectedTheme) {
-      localStorage.theme = selectedTheme;
-    }
-    darkTheme = shouldUseDark();
-  }
-  $: if (darkTheme) {
-    console.log('Using dark theme');
-    document.documentElement.classList.add('dark');
-  } else {
-    console.log('Using light theme');
-    document.documentElement.classList.remove('dark');
-  }
-  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
-    darkTheme = !e.matches;
   });
 
   /** Swap a range if the start comes after the end */
@@ -380,7 +352,7 @@
       bind:this={explanationEl}
       readonly
       value={explanation}
-      class={textAreaClass + ' mt-2'}
+      class="mt-2"
       cols={50}
       rows={10}
       style="resize: none; height: 50px"

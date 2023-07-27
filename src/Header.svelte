@@ -2,7 +2,7 @@
   import Sidebar from './Sidebar.svelte';
   import TextArea from './TextArea.svelte';
 
-  export let selectedTheme: string = 'os';
+  export let selectedTheme: string = localStorage.theme || 'os';
   export let commentChar = '#';
 
   export let importFromText: (text: string) => void;
@@ -10,6 +10,29 @@
   let importValue = '';
 
   let sidebarShown = false;
+
+  function shouldUseDark() {
+    return 'theme' in localStorage
+      ? localStorage.theme !== 'light'
+      : !window.matchMedia('(prefers-color-scheme: light)').matches;
+  }
+  let darkTheme = shouldUseDark();
+  $: {
+    if (selectedTheme === 'os') {
+      localStorage.removeItem('theme');
+    } else if (selectedTheme) {
+      localStorage.theme = selectedTheme;
+    }
+    darkTheme = shouldUseDark();
+  }
+  $: if (darkTheme) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+    darkTheme = shouldUseDark();
+  });
 </script>
 
 <Sidebar bind:sidebarShown>
@@ -44,7 +67,7 @@
     </select>
   </div>
 </Sidebar>
-<div class="header">
+<div class="header bg-gray-100 dark:bg-black">
   <div class="flex">
     <a href="https://github.com/Vyxal/Luminespire" class="m-auto text-center text-4xl font-bold">
       <h1>Luminespire</h1>
@@ -58,8 +81,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    background-color: rgb(0, 0, 0);
     padding-top: 10px;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
   }
 </style>
