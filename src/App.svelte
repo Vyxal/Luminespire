@@ -199,12 +199,13 @@
     navigator.clipboard.writeText(explanation);
   }
 
-  function doImportFromText(text: string) {
-    const res = importFromText(text, commentChar);
+  function doImportFromText(importValue: string) {
+    const res = importFromText(importValue, commentChar);
     text = res.prog;
-    console.log(`text ${text}!`);
     lines = res.lines;
-    selectedLine = res.selectedLine ?? selectedLine;
+    if (res.selectedLine) {
+      updateSelectedLine(res.selectedLine);
+    }
   }
 </script>
 

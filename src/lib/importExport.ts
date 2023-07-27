@@ -123,7 +123,6 @@ function importFromMetadata(text: string): ImportRes | null {
 }
 
 export function importFromText(importValue: string, commentChar: string): ImportRes {
-  console.log(`importValue: ${importValue}`);
   const fromMetadata = importFromMetadata(importValue);
   if (fromMetadata) {
     return fromMetadata;
@@ -147,9 +146,6 @@ export function importFromText(importValue: string, commentChar: string): Import
       explanationLines = explanationLines.slice(1);
     }
   }
-
-  console.log(`Text is ${text}`);
-  console.log(explanationLines);
 
   if (text.includes(invisCharToMetaLookup['-'])) {
     text = text.slice(0, text.indexOf(invisCharToMetaLookup['-']));
@@ -180,8 +176,6 @@ export function importFromText(importValue: string, commentChar: string): Import
   let selectedLine: number;
   const lines = [];
 
-  console.log(groups);
-
   for (let group of groups) {
     const commentInd = group[group.length - 1].indexOf(commentChar);
     const comment = group[group.length - 1].slice(commentInd + 1).trimStart();
@@ -189,7 +183,6 @@ export function importFromText(importValue: string, commentChar: string): Import
     codeBlock.push(group[group.length - 1].slice(0, maxLen));
 
     lines.push(newLine());
-    selectedLine = lines[lines.length - 1].id;
     // if all lines are blank, skip, marking the lines as "no padding"
 
     if (group[0].startsWith(commentChar) && !textLines.some(x => x.startsWith(commentChar))) {
@@ -221,7 +214,7 @@ export function importFromText(importValue: string, commentChar: string): Import
     }
   }
 
-  console.log(lines);
+  selectedLine = lines.length - 1;
 
   return { prog: text, selectedLine, lines };
 }
