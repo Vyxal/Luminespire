@@ -50,7 +50,7 @@
     });
   });
 
-  $: maxLen = Math.max(...textLines.map(r => r.length));
+  $: maxLen = Math.max(...textLines.map(r => [...r].length));
   $: explanation =
     [
       '```\n' + text + exportToMetadata(lines) + (text.includes('\n') ? '\n' : ''),
@@ -148,7 +148,7 @@
             tabindex={idx} />
           <div class="line-text w-2/5 overflow-auto break-words font-mono">
             {line.code
-              .flatMap((row, r) => row?.map((col, c) => (col ? textLines[r][c] : '')) ?? [])
+              .flatMap((row, r) => row?.map((col, c) => (col ? [...textLines[r]][c] : '')) ?? [])
               .join('')}
           </div>
           <div class="mr-4 w-2/5">
