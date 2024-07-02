@@ -119,7 +119,7 @@
   {#each textLines as row, r}
     <div class="flex flex-wrap">
       {#if row?.length}
-        {#each row as char, c}
+        {#each Array.from(row) as char, c}
           <div
             class={`cursor-pointer touch-none select-none px-2 py-1 font-mono text-lg ${charClass} ${
               selectedLine === null || lines[selectedLine] === undefined
