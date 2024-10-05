@@ -115,56 +115,62 @@
   }
 </script>
 
-<div class="p-5">
+<div class="container mx-auto p-6">
   <Header importFromText={doImportFromText} bind:commentChar />
-  <!-- TODO mt-14 is a bandaid fix to avoid the Luminespire header covering up the Program -->
-  <div class="mt-14 text-xl font-bold">Program</div>
-  <TextArea class="mt-2 h-24 min-h-[50px] w-full p-2" bind:value={text} />
-  <CharButtons {text} bind:lines bind:selectedLine bind:clearSelection />
+  <div class="mt-16 space-y-8">
+    <section>
+      <h2 class="mb-4 text-2xl font-bold text-gray-800">Program</h2>
+      <TextArea
+        class="h-32 w-full rounded-md border border-gray-300 p-2 font-mono text-sm"
+        bind:value={text} />
+      <CharButtons {text} bind:lines bind:selectedLine bind:clearSelection />
+    </section>
 
-  <br /><br />
-
-  <div class="text-xl font-bold">Lines</div>
-  <div class="flex w-full">
-    <p class="mr-8 w-6">Line</p>
-    <p class="w-2/5">Code</p>
-    <p class="mr-4 w-2/5">Explanation</p>
-  </div>
-  <br />
-  <ul bind:this={linesEl}>
-    {#each lines as line, idx (line.id)}
-      <li class="line">
-        <div
-          class="flex w-full"
-          on:click={() => updateSelectedLine(idx)}
-          on:keypress={() => updateSelectedLine(idx)}>
-          <div><i class="fa-solid fa-grip line-move mr-4 cursor-grab" /></div>
-          <div
-            class="line-checkbox mr-4 h-6 w-6 cursor-pointer"
-            class:bg-gray-300={idx !== selectedLine}
-            class:checkbox={idx === selectedLine}
-            role="radio"
-            aria-checked={idx === selectedLine}
-            tabindex={idx} />
-          <div class="line-text w-2/5 overflow-auto break-words font-mono">
-            {line.code
-              .flatMap((row, r) => row?.map((col, c) => (col ? [...textLines[r]][c] : '')) ?? [])
-              .join('')}
-          </div>
-          <div class="mr-4 w-2/5">
-            <TextArea class="line-textarea w-full" bind:value={line.input} />
-          </div>
-          <div class="w-1/5 sm:grid sm:grid-cols-2">
-            <div class="grid grid-rows-2">
-              <div>
-                <label><input type="checkbox" bind:checked={line.ignoreCode} />No code</label>
+    <section>
+      <h2 class="mb-4 text-2xl font-bold text-gray-800">Lines</h2>
+      <div class="mb-4 grid grid-cols-12 gap-4 font-semibold text-gray-600">
+        <div class="col-span-1">Line</div>
+        <div class="col-span-5">Code</div>
+        <div class="col-span-5">Explanation</div>
+        <div class="col-span-1">Actions</div>
+      </div>
+      <ul bind:this={linesEl} class="space-y-4">
+        {#each lines as line, idx (line.id)}
+          <li class="line rounded-lg bg-white p-4 shadow-md transition-shadow hover:shadow-lg">
+            <div
+              class="grid grid-cols-12 gap-4 items-center"
+              on:click={() => updateSelectedLine(idx)}
+              on:keypress={() => updateSelectedLine(idx)}>
+              <div class="col-span-1 flex items-center">
+                <i class="fa-solid fa-grip line-move mr-2 cursor-grab text-gray-400" />
+                <div
+                  class="h-6 w-6 rounded-full border-2 border-[#5432c3] cursor-pointer"
+                  class:bg-[#5432c3]={idx === selectedLine}
+                  role="radio"
+                  aria-checked={idx === selectedLine}
+                  tabindex={idx} />
               </div>
-              <div>
-                <label><input type="checkbox" bind:checked={line.noComment} />No character</label>
+              <div class="col-span-5 overflow-auto break-words font-mono text-sm">
+                {line.code
+                  .flatMap(
+                    (row, r) => row?.map((col, c) => (col ? [...textLines[r]][c] : '')) ?? [],
+                  )
+                  .join('')}
               </div>
-            </div>
-            <div class="">
-              <div>
+              <div class="col-span-5">
+                <TextArea
+                  class="w-full rounded-md border border-gray-300 p-2 text-sm"
+                  bind:value={line.input} />
+              </div>
+              <div class="col-span-1 flex flex-col space-y-2">
+                <label class="flex items-center">
+                  <input type="checkbox" class="mr-2" bind:checked={line.ignoreCode} />
+                  <span class="text-sm">No code</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="mr-2" bind:checked={line.noComment} />
+                  <span class="text-sm">No character</span>
+                </label>
                 <button
                   on:click={() => {
                     lines.splice(idx, 1);
@@ -173,43 +179,34 @@
                     }
                     lines = lines;
                   }}
-                  class="btn"><i class="fa-solid fa-xmark" /></button>
-              </div>
-              <div>
-                <button on:click={() => (line.code = [])} class="btn"
-                  ><i class="fa-solid fa-arrows-rotate" /></button>
+                  class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-600 transition-colors hover:bg-gray-300">
+                  <i class="fa-solid fa-xmark" />
+                </button>
+                <button
+                  on:click={() => (line.code = [])}
+                  class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-600 transition-colors hover:bg-gray-300">
+                  <i class="fa-solid fa-arrows-rotate" />
+                </button>
               </div>
             </div>
-          </div>
-        </div>
-      </li>
-    {/each}
-  </ul>
+          </li>
+        {/each}
+      </ul>
+      <button
+        class="mt-4 rounded-md bg-[#5432c3] px-4 py-2 text-white transition-colors hover:bg-[#4a2ca8]"
+        on:click={addLine}>Add Line</button>
+    </section>
 
-  <br />
-
-  <button class="btn" on:click={addLine}>Add Line</button>
-
-  <div class="mt-8 grid grid-cols-1">
-    <div class="text-xl font-bold">Explanation</div>
-    <!-- make this text area expand upon input -->
-    <TextArea
-      readonly
-      value={explanation}
-      class="mt-2"
-      cols={50}
-      rows={10}
-      style="resize: none; height: 50px"
-      resizable={true} />
-
-    <button class="btn mt-4" on:click={copyExplanation}>Click to copy to clipboard</button>
+    <section>
+      <h2 class="mb-4 text-2xl font-bold text-gray-800">Explanation</h2>
+      <TextArea
+        readonly
+        value={explanation}
+        class="h-64 w-full rounded-md border border-gray-300 p-2 font-mono text-sm"
+        style="resize: vertical;" />
+      <button
+        class="mt-4 rounded-md bg-[#5432c3] px-4 py-2 text-white transition-colors hover:bg-[#4a2ca8]"
+        on:click={copyExplanation}>Copy to Clipboard</button>
+    </section>
   </div>
-  <!--
-  <button on:click={exportToMetadata}>Export (debug)</button>-->
 </div>
-
-<style>
-  .checkbox {
-    background-color: #5432c3;
-  }
-</style>
