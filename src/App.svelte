@@ -92,7 +92,7 @@
         }
       }),
     ].join('\n') +
-    '\n💎\n```\nCreated with the help of [Luminespire](https://vyxal.github.io/Luminespire).';
+    '\n💎\n```\n<sup>Created with the help of [Luminespire](https://vyxal.github.io/Luminespire).</sup>';
 
   function updateSelectedLine(selected) {
     if (selected !== selectedLine) {
